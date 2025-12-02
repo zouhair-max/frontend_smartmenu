@@ -173,7 +173,7 @@ export default function Categories() {
 
   // Enhanced Loading Component with Orange/Amber Theme
   const CategoriesLoadingSpinner = () => (
-    <div className="min-h-[60vh] bg-gradient-to-br from-orange-50 via-white to-amber-50 flex items-center justify-center p-4 rounded-2xl">
+    <div className="w-full bg-gradient-to-br from-orange-50 via-white to-amber-50 flex items-center justify-center p-4 rounded-2xl">
       <div className="text-center">
         {/* Animated Logo Container */}
         <div className="relative w-20 h-20 mx-auto mb-6">
@@ -232,8 +232,8 @@ export default function Categories() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50 p-3 sm:p-4 md:p-6">
-      <div className="max-w-8xl mx-auto">
+    <div className=" w-full">
+      <div className="w-full mx-auto">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">

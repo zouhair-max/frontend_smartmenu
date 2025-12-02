@@ -3,7 +3,7 @@ import { Menu, ChefHat, Utensils } from 'lucide-react';
 
 const LoadingSpinner = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50 flex items-center justify-center p-4">
+    <div className="w-full min-h-screen  flex items-center justify-center ">
       <div className="text-center">
         {/* Animated Logo Container */}
         <div className="relative w-24 h-24 mx-auto mb-8">

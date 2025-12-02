@@ -1,6 +1,13 @@
-import {api} from './api'; // Import as default
+import { api } from './api';
 
 class MealsService {
+  // Get all meals for a restaurant
+  getMealsByRestaurant(restaurantId) {
+    return api.get('/owner/meals', { 
+      params: { restaurant_id: restaurantId } 
+    });
+  }
+
   // Get all meals with optional filters
   getAllMeals(params = {}) {
     return api.get('/owner/meals', { params });
@@ -70,4 +77,6 @@ class MealsService {
   }
 }
 
-export default new MealsService();
+// Export as both default and named export for flexibility
+export const mealService = new MealsService();
+export default mealService;

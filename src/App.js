@@ -13,6 +13,10 @@ import MealForm from './screens/components/Restaurant_owner/Meals/MealForm.jsx';
 import NavBarLayout from './screens/components/Restaurant_owner/NavBarLayout.jsx';
 import Dashboard from './screens/components/Restaurant_owner/Dashboard.jsx';
 import Categories from './screens/components/Restaurant_owner/Categories.jsx';
+import Order from './screens/components/Restaurant_owner/Order.jsx';
+import Staff from './screens/components/Restaurant_owner/Staff.jsx';
+import Restaurant_Tables from './screens/components/Restaurant_owner/Restaurant_Tables.jsx';
+import Setting from './screens/components/Restaurant_owner/Setting.jsx';
 
 export default function App() {
   return (
@@ -28,7 +32,7 @@ export default function App() {
             
             {/* Protected Routes with NavBarLayout */}
             <Route 
-              path="/screen/dashboard" 
+              path="/dashboard" 
               element={
                 <ProtectedRoute>
                   <NavBarLayout>
@@ -74,6 +78,46 @@ export default function App() {
                 <ProtectedRoute>
                   <NavBarLayout>
                     <MealForm />
+                  </NavBarLayout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/orders" 
+              element={
+                <ProtectedRoute>
+                  <NavBarLayout>
+                    <Order />
+                  </NavBarLayout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/Staffs" 
+              element={
+                <ProtectedRoute>
+                  <NavBarLayout>
+                    <Staff />
+                  </NavBarLayout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/Restaurant_Tables" 
+              element={
+                <ProtectedRoute>
+                  <NavBarLayout>
+                    <Restaurant_Tables />
+                  </NavBarLayout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/settings" 
+              element={
+                <ProtectedRoute>
+                  <NavBarLayout>
+                    <Setting />
                   </NavBarLayout>
                 </ProtectedRoute>
               } 

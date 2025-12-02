@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import mealsService from '../../../../services/mealsService';
+import mealsService from '../../../../services/MealsService';
 
 const MealOptionsExtras = () => {
   const { id } = useParams();

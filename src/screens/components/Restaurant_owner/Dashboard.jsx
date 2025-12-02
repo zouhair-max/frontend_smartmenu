@@ -67,16 +67,16 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="w-full">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Restaurant Dashboard</h1>
-          <p className="text-gray-600">Welcome back! Here's what's happening today.</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Restaurant Dashboard</h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">Welcome back! Here's what's happening today.</p>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <StatCard
             title="Orders Today"
             value={dashboardData.orders_today}
@@ -104,7 +104,7 @@ const Dashboard = () => {
         </div>
 
         {/* Charts and Tables */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Orders Chart */}
           <div className="lg:col-span-2">
             <OrdersChart data={dashboardData.orders_graph} />
@@ -117,28 +117,28 @@ const Dashboard = () => {
         </div>
 
         {/* Recent Orders and Best Selling */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <RecentOrders orders={dashboardData.recent_orders} />
           <BestSellingProducts products={dashboardData.best_selling} />
         </div>
 
         {/* Additional Summary Stats */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Orders</h3>
-            <p className="text-3xl font-bold text-blue-600">
+        <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Total Orders</h3>
+            <p className="text-2xl sm:text-3xl font-bold text-blue-600">
               {dashboardData.summary_stats?.total_orders || 0}
             </p>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Earnings</h3>
-            <p className="text-3xl font-bold text-green-600">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Total Earnings</h3>
+            <p className="text-2xl sm:text-3xl font-bold text-green-600">
               €{(dashboardData.summary_stats?.total_earnings || 0).toFixed(2)}
             </p>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Avg Order Value</h3>
-            <p className="text-3xl font-bold text-purple-600">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Avg Order Value</h3>
+            <p className="text-2xl sm:text-3xl font-bold text-purple-600">
               €{(dashboardData.summary_stats?.average_order_value || 0).toFixed(2)}
             </p>
           </div>

@@ -15,7 +15,7 @@ import {
   Tag,
   Loader
 } from 'lucide-react';
-import mealsService from '../../../../services/MealsService';
+import mealsService from '../../../../services/mealsService';
 import categoriesService from '../../../../services/categoryApi';
  import LoadingSpinner from '../components/LoadingSpinner'; 
 

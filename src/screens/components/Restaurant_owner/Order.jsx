@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import orderService from '../../../services/OrderService';
-import mealService from '../../../services/MealsService';
+import mealService from '../../../services/mealsService';
 import { tableService } from '../../../services/tableService';
 
 export default function Order() {

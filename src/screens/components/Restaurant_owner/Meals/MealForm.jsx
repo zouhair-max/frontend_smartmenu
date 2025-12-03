@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Save, X, Upload, ChefHat, Globe, DollarSign, ListOrdered, Image, CheckCircle, Utensils } from 'lucide-react';
-import mealsService from '../../../../services/MealsService';
+import mealsService from '../../../../services/mealsService';
 import categoriesService from '../../../../services/categoryApi';
 
 // Enhanced Loading Spinner with Food Theme

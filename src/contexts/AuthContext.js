@@ -92,11 +92,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUser = (updatedUserData) => {
+    if (!user) {
+      console.warn('Cannot update user: user is not set');
+      return;
+    }
+    // Merge with existing user data to preserve all fields (id, role, etc.)
+    const updatedUser = { ...user, ...updatedUserData };
+    setUser(updatedUser);
+    // Update localStorage as well
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
   const value = {
     user,
     isAuthenticated,
     login,
     logout,
+    updateUser,
     loading
   };
 

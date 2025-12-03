@@ -44,7 +44,8 @@ const NAVIGATION_ITEMS = [
     path: '/dashboard', 
     icon: LayoutDashboard,
     badge: null,
-    description: 'Overview & Analytics'
+    description: 'Overview & Analytics',
+    allowedRoles: ['restaurant_owner']
   },
     { 
     id: 'Tables ',
@@ -52,14 +53,16 @@ const NAVIGATION_ITEMS = [
     path: '/Restaurant_Tables', 
     icon: Package,
     badge:null,
-    description: 'Table Restaurant'
+    description: 'Table Restaurant',
+    allowedRoles: ['restaurant_owner', 'staff']
   },
   { 
     id: 'categories',
     name: 'Categories', 
     path: '/categories', 
     icon: ChartColumnStacked,
-    description: 'Product Categories'
+    description: 'Product Categories',
+    allowedRoles: ['restaurant_owner', 'staff']
   },
   { 
     id: 'meals',
@@ -67,7 +70,8 @@ const NAVIGATION_ITEMS = [
     path: '/meals', 
     icon: UtensilsCrossed,
     badge: null,
-    description: 'Menu Management'
+    description: 'Menu Management',
+    allowedRoles: ['restaurant_owner', 'staff']
   },
   { 
     id: 'orders',
@@ -75,7 +79,8 @@ const NAVIGATION_ITEMS = [
     path: '/orders', 
     icon: ShoppingCart,
     badge:null,
-    description: 'Order Processing'
+    description: 'Order Processing',
+    allowedRoles: ['restaurant_owner', 'staff']
   },
   { 
     id: 'customers',
@@ -83,7 +88,8 @@ const NAVIGATION_ITEMS = [
     path: '/Staffs', 
     icon: Users,
     badge: null,
-    description: 'Staffs Database'
+    description: 'Staffs Database',
+    allowedRoles: ['restaurant_owner']
   },
 
 ];
@@ -297,7 +303,7 @@ const UserProfile = ({ user, collapsed = false, isLoading = false, isMobile = fa
               {user?.email || 'user@example.com'}
             </p>
             <span className="inline-block mt-1.5 text-xs font-medium text-yellow-700 bg-yellow-100 px-2.5 py-1 rounded-full">
-              Restaurant Owner
+              {user?.role === 'staff' ? 'Staff' : 'Restaurant Owner'}
             </span>
           </div>
         )}
@@ -348,7 +354,7 @@ const UserProfile = ({ user, collapsed = false, isLoading = false, isMobile = fa
             {user?.email || 'user@example.com'}
           </p>
           <span className="inline-block mt-1 text-xs font-medium text-yellow-700 bg-yellow-100 px-2 py-0.5 rounded-full">
-            Restaurant Owner
+            {user?.role === 'staff' ? 'Staff' : 'Restaurant Owner'}
           </span>
         </div>
       )}
@@ -590,13 +596,23 @@ const ResponsiveNavLayout = ({ children }) => {
     }
   }, [isMobile, isTablet]);
 
+  // Filter navigation items based on user role
+  const filteredNavigationItems = useMemo(() => {
+    if (!user) return [];
+    const userRole = user.role || '';
+    return NAVIGATION_ITEMS.filter(item => {
+      const allowedRoles = item.allowedRoles || [];
+      return allowedRoles.length === 0 || allowedRoles.includes(userRole);
+    });
+  }, [user]);
+
   // CORRECTION : Utiliser l'URL actuelle pour déterminer la page active
   const pageTitle = useMemo(() => {
-    const currentItem = NAVIGATION_ITEMS.find(item => 
+    const currentItem = filteredNavigationItems.find(item => 
       location.pathname === item.path || location.pathname.startsWith(item.path)
     );
     return currentItem?.name || 'Dashboard';
-  }, [location.pathname]);
+  }, [location.pathname, filteredNavigationItems]);
 
   // CORRECTION : Fonction pour vérifier si un item est actif
   const isNavItemActive = useCallback((itemPath) => {
@@ -666,7 +682,7 @@ const ResponsiveNavLayout = ({ children }) => {
 
           {/* Navigation */}
           <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
-            {NAVIGATION_ITEMS.map((item) => (
+            {filteredNavigationItems.map((item) => (
               <NavItem
                 key={item.id}
                 item={item}
@@ -683,19 +699,16 @@ const ResponsiveNavLayout = ({ children }) => {
             <UserProfile user={user} isLoading={isLoading} isMobile={true} />
             
             <div className="space-y-1">
-            
-              
-              <ActionButton
-                icon={Settings}
-                label="Settings"
-                onClick={() => handleNavigation('/settings', 'settings')}
-                variant="default"
-                isLoading={isLoading}
-                isMobile={true}
-              />
-              
-            
-              
+              {user?.role === 'restaurant_owner' && (
+                <ActionButton
+                  icon={Settings}
+                  label="Settings"
+                  onClick={() => handleNavigation('/settings', 'settings')}
+                  variant="default"
+                  isLoading={isLoading}
+                  isMobile={true}
+                />
+              )}
               <ActionButton
                 icon={LogOut}
                 label="Logout"
@@ -800,7 +813,7 @@ const ResponsiveNavLayout = ({ children }) => {
 
         {/* Navigation Items */}
         <nav className="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
-          {NAVIGATION_ITEMS.map((item) => (
+          {filteredNavigationItems.map((item) => (
             <NavItem
               key={item.id}
               item={item}
@@ -822,23 +835,19 @@ const ResponsiveNavLayout = ({ children }) => {
           
           {!sidebarCollapsed && (
             <div className="space-y-1">
-              
-              
-              <ActionButton
-                icon={Settings}
-                label="Settings"
-                onClick={() => handleNavigation('/settings', 'settings')}
-                variant="default"
-                isLoading={isLoading}
-              />
-              
-          
-              
+              {user?.role === 'restaurant_owner' && (
+                <ActionButton
+                  icon={Settings}
+                  label="Settings"
+                  onClick={() => handleNavigation('/settings', 'settings')}
+                  variant="default"
+                  isLoading={isLoading}
+                />
+              )}
               <ActionButton
                 icon={LogOut}
                 label="Logout"
                 onClick={handleLogout}
-                
                 variant="danger"
                 isLoading={isLoading}
               />

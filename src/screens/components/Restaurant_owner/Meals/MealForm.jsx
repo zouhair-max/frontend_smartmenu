@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Save, X, Upload, ChefHat, Globe, DollarSign, ListOrdered, Image, CheckCircle, Utensils } from 'lucide-react';
 import mealsService from '../../../../services/mealsService';
 import categoriesService from '../../../../services/categoryApi';
+import CustomSelect from '../components/CustomSelect';
 
 // Enhanced Loading Spinner with Food Theme
 const LoadingSpinner = () => {
@@ -12,7 +13,7 @@ const LoadingSpinner = () => {
         {/* Animated Chef Container */}
         <div className="relative w-24 h-24 mx-auto mb-6">
           {/* Rotating Plate */}
-          <div className="absolute inset-0 rounded-full border-4 border-yellow-200 border-t-yellow-500 animate-spin"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-orange-200 border-t-orange-500 animate-spin"></div>
           
           {/* Floating Utensils */}
           <div className="absolute -top-2 -left-2 w-6 h-6 text-orange-500 animate-bounce">
@@ -24,7 +25,7 @@ const LoadingSpinner = () => {
           
           {/* Center Chef Hat */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <ChefHat className="w-10 h-10 text-yellow-500" />
+            <ChefHat className="w-10 h-10 text-orange-500" />
           </div>
         </div>
 
@@ -33,7 +34,7 @@ const LoadingSpinner = () => {
         
         {/* Colorful Loading Dots */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          <div className="w-3 h-3 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+          <div className="w-3 h-3 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
           <div className="w-3 h-3 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
           <div className="w-3 h-3 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
           <div className="w-3 h-3 bg-red-500 rounded-full animate-bounce" style={{ animationDelay: '450ms' }}></div>
@@ -41,7 +42,7 @@ const LoadingSpinner = () => {
 
         {/* Progress Bar */}
         <div className="w-64 h-2 bg-gray-200 rounded-full mx-auto overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 rounded-full animate-pulse"></div>
+          <div className="h-full bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 rounded-full animate-pulse"></div>
         </div>
       </div>
     </div>
@@ -194,7 +195,7 @@ setImagePreview(meal.image);
           {/* Header */}
           <div className="mb-6 sm:mb-8 text-center">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-              <div className="p-2 sm:p-3 bg-yellow-500 rounded-full shadow-lg">
+              <div className="p-2 sm:p-3 bg-orange-500 rounded-full shadow-lg">
                 <ChefHat className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
@@ -212,31 +213,26 @@ setImagePreview(meal.image);
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                 {/* Left Column - Basic Information */}
                 <div className="space-y-4 sm:space-y-6">
-                  <div className="bg-gradient-to-r from-yellow-50 to-amber-50 p-4 sm:p-6 rounded-xl border border-yellow-100">
+                  <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-4 sm:p-6 rounded-xl border border-orange-100">
                     <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2">
-                      <Utensils className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
+                      <Utensils className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
                       Basic Information
                     </h2>
 
                     {/* Category */}
                     <div className="mb-4 sm:mb-6">
-                      <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
-                        <ListOrdered className="w-4 h-4 text-yellow-500" />
-                        Category *
-                      </label>
-                      <select
+                      <CustomSelect
+                        label="Category"
+                        icon={ListOrdered}
                         required
-                        className="w-full p-3 sm:p-4 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all duration-200 bg-white shadow-sm text-sm sm:text-base"
-                        value={formData.category_id}
-                        onChange={(e) => handleInputChange('category_id', e.target.value)}
-                      >
-                        <option value="">Select Category</option>
-                        {categories.map(category => (
-                          <option key={category.id} value={category.id}>
-                            {category.translations?.[0]?.name || category.name}
-                          </option>
-                        ))}
-                      </select>
+                        value={formData.category_id?.toString() || ''}
+                        onChange={(value) => handleInputChange('category_id', value)}
+                        placeholder="Select Category"
+                        options={categories.map(category => ({
+                          value: category.id.toString(),
+                          label: category.translations?.[0]?.name || category.name
+                        }))}
+                      />
                     </div>
 
                     {/* Price */}
@@ -284,7 +280,7 @@ setImagePreview(meal.image);
                             onChange={(e) => handleInputChange('available', e.target.checked)}
                           />
                           <div className={`w-12 h-6 rounded-full transition-all duration-200 ${
-                            formData.available ? 'bg-yellow-500' : 'bg-gray-300'
+                            formData.available ? 'bg-orange-500' : 'bg-gray-300'
                           }`}></div>
                           <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ${
                             formData.available ? 'transform translate-x-6' : ''
@@ -328,7 +324,7 @@ setImagePreview(meal.image);
                               alt="Preview"
                               className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 object-cover rounded-lg sm:rounded-xl shadow-md border-2 border-white"
                             />
-                            <div className="absolute inset-0 border-2 border-yellow-200 rounded-lg sm:rounded-xl pointer-events-none"></div>
+                            <div className="absolute inset-0 border-2 border-orange-200 rounded-lg sm:rounded-xl pointer-events-none"></div>
                           </div>
                         </div>
                       )}
@@ -376,7 +372,7 @@ setImagePreview(meal.image);
                   </div>
 
                   {/* Arabic Translation */}
-                  <div className="bg-gradient-to-r from-orange-50 to-yellow-50 p-4 sm:p-6 rounded-xl border border-orange-100">
+                  <div className="bg-gradient-to-r from-orange-50 to-orange-50 p-4 sm:p-6 rounded-xl border border-orange-100">
                     <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
                       <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
                       Arabic Translation
@@ -427,7 +423,7 @@ setImagePreview(meal.image);
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full sm:w-auto px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg sm:rounded-xl hover:from-yellow-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 font-semibold shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm sm:text-base"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-orange-500 to-orange-500 text-white rounded-lg sm:rounded-xl hover:from-orange-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 font-semibold shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm sm:text-base"
                 >
                   <Save className="w-4 h-4 sm:w-5 sm:h-5" />
                   {loading ? 'Saving...' : (isEdit ? 'Update Meal' : 'Create Meal')}

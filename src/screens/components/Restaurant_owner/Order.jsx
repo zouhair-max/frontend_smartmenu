@@ -3,6 +3,8 @@ import { useAuth } from '../../../contexts/AuthContext';
 import orderService from '../../../services/OrderService';
 import mealService from '../../../services/mealsService';
 import { tableService } from '../../../services/tableService';
+import CustomSelect from './components/CustomSelect';
+import { UtensilsCrossed, Table, Filter as FilterIcon, Tag } from 'lucide-react';
 
 export default function Order() {
   const { user } = useAuth();
@@ -497,33 +499,40 @@ export default function Order() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
           <div className="flex flex-col sm:flex-row gap-4">
-            <select 
-              value={filters.status} 
-              onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
-            >
-              <option value="">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="preparing">Preparing</option>
-              <option value="ready">Ready</option>
-              <option value="served">Served</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
+            <div className="flex-1">
+              <CustomSelect
+                icon={Tag}
+                value={filters.status || ''}
+                onChange={(value) => setFilters(prev => ({ ...prev, status: value || '' }))}
+                placeholder="All Statuses"
+                options={[
+                  { value: '', label: 'All Statuses' },
+                  { value: 'pending', label: 'Pending' },
+                  { value: 'confirmed', label: 'Confirmed' },
+                  { value: 'preparing', label: 'Preparing' },
+                  { value: 'ready', label: 'Ready' },
+                  { value: 'served', label: 'Served' },
+                  { value: 'completed', label: 'Completed' },
+                  { value: 'cancelled', label: 'Cancelled' }
+                ]}
+              />
+            </div>
 
-            <select
-              value={filters.table_id}
-              onChange={(e) => setFilters(prev => ({ ...prev, table_id: e.target.value }))}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
-            >
-              <option value="">All Tables</option>
-              {tables.map(table => (
-                <option key={table.id} value={table.id}>
-                  {table.name} {!table.available && '(Unavailable)'}
-                </option>
-              ))}
-            </select>
+            <div className="flex-1">
+              <CustomSelect
+                icon={Table}
+                value={filters.table_id?.toString() || ''}
+                onChange={(value) => setFilters(prev => ({ ...prev, table_id: value || '' }))}
+                placeholder="All Tables"
+                options={[
+                  { value: '', label: 'All Tables' },
+                  ...tables.map(table => ({
+                    value: table.id.toString(),
+                    label: `${table.name} ${!table.available ? '(Unavailable)' : ''}`
+                  }))
+                ]}
+              />
+            </div>
 
             <div className="flex gap-2">
               <button 
@@ -589,7 +598,6 @@ export default function Order() {
                 <div key={order.id} className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
                   <div className="p-5">
                     <div className="flex items-start justify-between mb-4">
-                      <h4 className="text-lg font-semibold text-gray-900">Order #{order.id}</h4>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusClass(order.status)}`}>
                         {order.status}
                       </span>
@@ -687,20 +695,18 @@ export default function Order() {
             <form onSubmit={handleCreateOrder} className="overflow-y-auto max-h-[calc(90vh-120px)]">
               <div className="p-6 space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Table *</label>
-                  <select
+                  <CustomSelect
+                    label="Table"
+                    icon={Table}
                     required
-                    value={newOrder.table_id}
-                    onChange={(e) => setNewOrder(prev => ({ ...prev, table_id: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
-                  >
-                    <option value="">Select a Table</option>
-                    {tables.filter(isTableAvailable).map(table => (
-                      <option key={table.id} value={table.id}>
-                        {table.name} (Capacity: {table.capacity})
-                      </option>
-                    ))}
-                  </select>
+                    value={newOrder.table_id ? newOrder.table_id.toString() : ''}
+                    onChange={(value) => setNewOrder(prev => ({ ...prev, table_id: value || '' }))}
+                    placeholder="Select a Table"
+                    options={tables.filter(isTableAvailable).map(table => ({
+                      value: table.id.toString(),
+                      label: `${table.name} (Capacity: ${table.capacity})`
+                    }))}
+                  />
                   <p className="mt-2 text-sm text-gray-500">
                     {tables.filter(isTableAvailable).length} tables available
                     {tables.length === 0 && ' - Loading tables...'}
@@ -727,20 +733,18 @@ export default function Order() {
                       <div key={index} className="bg-gray-50 rounded-lg p-4">
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
                           <div className="lg:col-span-5">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Meal</label>
-                            <select
+                            <CustomSelect
+                              label="Meal"
+                              icon={UtensilsCrossed}
                               required
-                              value={item.meal_id}
-                              onChange={(e) => updateOrderItem(index, 'meal_id', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
-                            >
-                              <option value="">Select a Meal</option>
-                              {meals.filter(meal => meal.available).map(meal => (
-                                <option key={meal.id} value={meal.id}>
-                                  {meal.name} - ${meal.price} ({getCategoryLabel(meal.category)})
-                                </option>
-                              ))}
-                            </select>
+                              value={item.meal_id ? item.meal_id.toString() : ''}
+                              onChange={(value) => updateOrderItem(index, 'meal_id', value || '')}
+                              placeholder="Select a Meal"
+                              options={meals.filter(meal => meal.available).map(meal => ({
+                                value: meal.id.toString(),
+                                label: `${meal.name} - $${meal.price} (${getCategoryLabel(meal.category)})`
+                              }))}
+                            />
                             {meals.length === 0 && <p className="mt-1 text-sm text-gray-500">Loading meals...</p>}
                           </div>
                           

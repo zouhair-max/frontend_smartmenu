@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import settingsService from '../../../services/settingsService';
 import LoadingSpinner from './components/LoadingSpinner';
+import { useAuth } from '../../../contexts/AuthContext';
 import {
   Settings,
   User,
@@ -23,6 +24,7 @@ import {
 } from 'lucide-react';
 
 const Setting = () => {
+  const { updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -183,6 +185,23 @@ const Setting = () => {
         // Update avatar URL if changed
         if (response.user && response.user.avatar_url) {
           setAvatarUrl(response.user.avatar_url);
+        }
+        // Update AuthContext and localStorage with the new user data
+        if (response.user) {
+          // Update user data in AuthContext - preserve all existing fields
+          updateUser({
+            name: response.user.name || fullName,
+            email: response.user.email || userData.email,
+            phone: response.user.phone !== undefined ? response.user.phone : userData.phone,
+            avatar: response.user.avatar || response.user.avatar_url || null
+          });
+        } else {
+          // If response doesn't have user object, update with what we sent
+          updateUser({
+            name: fullName,
+            email: userData.email,
+            phone: userData.phone || null
+          });
         }
         // Refresh profile data to get updated information
         await fetchProfileData();

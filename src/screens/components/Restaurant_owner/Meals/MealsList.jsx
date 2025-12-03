@@ -17,7 +17,8 @@ import {
 } from 'lucide-react';
 import mealsService from '../../../../services/mealsService';
 import categoriesService from '../../../../services/categoryApi';
- import LoadingSpinner from '../components/LoadingSpinner'; 
+import LoadingSpinner from '../components/LoadingSpinner';
+import CustomSelect from '../components/CustomSelect'; 
 
 
 const MealsList = () => {
@@ -94,7 +95,7 @@ const MealsList = () => {
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 sm:mb-8 gap-4">
           <div className="w-full lg:w-auto">
             <div className="flex items-center gap-2 sm:gap-3 mb-2">
-              <div className="p-1.5 sm:p-2 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg shadow-lg">
+              <div className="p-1.5 sm:p-2 bg-gradient-to-r from-orange-500 to-orange-500 rounded-lg shadow-lg">
                 <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Meals Management</h1>
@@ -104,7 +105,7 @@ const MealsList = () => {
           
           <Link
             to="/meals/create"
-            className="w-full sm:w-auto bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl hover:from-yellow-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 font-semibold shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base"
+            className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl hover:from-orange-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 font-semibold shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base"
           >
             <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
             Add New Meal
@@ -120,45 +121,42 @@ const MealsList = () => {
               <input
                 type="text"
                 placeholder="Search meals..."
-                className="w-full pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all duration-200 text-sm sm:text-base"
+                className="w-full pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all duration-200 text-sm sm:text-base"
                 value={filters.search}
                 onChange={(e) => setFilters({...filters, search: e.target.value})}
               />
             </div>
 
             {/* Category Filter */}
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
-              <select
-                className="w-full pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all duration-200 appearance-none bg-white text-sm sm:text-base"
-                value={filters.category_id}
-                onChange={(e) => setFilters({...filters, category_id: e.target.value})}
-              >
-                <option value="">All Categories</option>
-                {categories.map(category => {
+            <CustomSelect
+              icon={Filter}
+              value={filters.category_id?.toString() || ''}
+              onChange={(value) => setFilters({...filters, category_id: value || ''})}
+              placeholder="All Categories"
+              options={[
+                { value: '', label: 'All Categories' },
+                ...categories.map(category => {
                   const categoryName = category.name || category.translations?.[0]?.name || `Category ${category.id}`;
-                  return (
-                    <option key={category.id} value={category.id}>
-                      {categoryName}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
+                  return {
+                    value: category.id.toString(),
+                    label: categoryName
+                  };
+                })
+              ]}
+            />
 
             {/* Availability Filter */}
-            <div className="relative">
-              <Eye className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
-              <select
-                className="w-full pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 appearance-none bg-white text-sm sm:text-base"
-                value={filters.availability}
-                onChange={(e) => setFilters({...filters, availability: e.target.value})}
-              >
-                <option value="">All Status</option>
-                <option value="1">Available</option>
-                <option value="0">Unavailable</option>
-              </select>
-            </div>
+            <CustomSelect
+              icon={Eye}
+              value={filters.availability?.toString() || ''}
+              onChange={(value) => setFilters({...filters, availability: value || ''})}
+              placeholder="All Status"
+              options={[
+                { value: '', label: 'All Status' },
+                { value: '1', label: 'Available' },
+                { value: '0', label: 'Unavailable' }
+              ]}
+            />
 
             {/* View Toggle */}
             <div className="flex space-x-2 bg-gray-100 p-1 rounded-lg sm:rounded-xl">
@@ -166,7 +164,7 @@ const MealsList = () => {
                 onClick={() => setFilters({...filters, view: 'grid'})}
                 className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-all duration-200 text-xs sm:text-sm ${
                   filters.view === 'grid' 
-                    ? 'bg-white text-yellow-600 shadow-sm' 
+                    ? 'bg-white text-orange-600 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-800'
                 }`}
               >
@@ -177,7 +175,7 @@ const MealsList = () => {
                 onClick={() => setFilters({...filters, view: 'list'})}
                 className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-all duration-200 text-xs sm:text-sm ${
                   filters.view === 'list' 
-                    ? 'bg-white text-yellow-600 shadow-sm' 
+                    ? 'bg-white text-orange-600 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-800'
                 }`}
               >
@@ -241,7 +239,7 @@ const MealsList = () => {
               <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Get started by creating your first delicious meal!</p>
               <Link
                 to="/meals/create"
-                className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl hover:from-yellow-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 font-semibold inline-flex items-center gap-2 text-sm sm:text-base"
+                className="bg-gradient-to-r from-orange-500 to-orange-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl hover:from-orange-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 font-semibold inline-flex items-center gap-2 text-sm sm:text-base"
               >
                 <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                 Create First Meal
@@ -270,7 +268,7 @@ const MealCard = ({ meal, onToggleAvailability, onDelete }) => {
         <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
           <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-semibold ${
             meal.available 
-              ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' 
+              ? 'bg-orange-100 text-orange-800 border border-orange-200' 
               : 'bg-red-100 text-red-800 border border-red-200'
           }`}>
             {meal.available ? 'Available' : 'Unavailable'}
@@ -289,7 +287,7 @@ const MealCard = ({ meal, onToggleAvailability, onDelete }) => {
         </div>
         
         <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <span className="text-xl sm:text-2xl font-bold text-yellow-600">${meal.price}</span>
+          <span className="text-xl sm:text-2xl font-bold text-orange-600">${meal.price}</span>
           {meal.order !== undefined && (
             <span className="text-xs sm:text-sm text-gray-500 bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
               Order: {meal.order}
@@ -303,7 +301,7 @@ const MealCard = ({ meal, onToggleAvailability, onDelete }) => {
             className={`flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 ${
               meal.available 
                 ? 'bg-amber-500 text-white hover:bg-amber-600' 
-                : 'bg-yellow-500 text-white hover:bg-yellow-600'
+                : 'bg-orange-500 text-white hover:bg-orange-600'
             }`}
           >
             {meal.available ? <EyeOff className="w-3 h-3 sm:w-4 sm:h-4" /> : <Eye className="w-3 h-3 sm:w-4 sm:h-4" />}
@@ -364,14 +362,14 @@ const MealRow = ({ meal, onToggleAvailability, onDelete }) => {
       </td>
       <td className="px-3 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center gap-1">
-          <DollarSign className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
-          <span className="text-lg sm:text-xl font-bold text-yellow-600">{meal.price}</span>
+          <DollarSign className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
+          <span className="text-lg sm:text-xl font-bold text-orange-600">{meal.price}</span>
         </div>
       </td>
       <td className="px-3 sm:px-6 py-3 sm:py-4">
         <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-semibold ${
           meal.available 
-            ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' 
+            ? 'bg-orange-100 text-orange-800 border border-orange-200' 
             : 'bg-red-100 text-red-800 border border-red-200'
         }`}>
           {meal.available ? 'Available' : 'Unavailable'}
@@ -384,7 +382,7 @@ const MealRow = ({ meal, onToggleAvailability, onDelete }) => {
             className={`flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 ${
               meal.available 
                 ? 'bg-amber-500 text-white hover:bg-amber-600' 
-                : 'bg-yellow-500 text-white hover:bg-yellow-600'
+                : 'bg-orange-500 text-white hover:bg-orange-600'
             }`}
           >
             {meal.available ? <EyeOff className="w-3 h-3 sm:w-4 sm:h-4" /> : <Eye className="w-3 h-3 sm:w-4 sm:h-4" />}

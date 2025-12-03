@@ -385,7 +385,6 @@ export default function Categories() {
                   </h3>
                   <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500">
                     <span>Order: {category.order}</span>
-                    <span className="font-mono">#{category.id}</span>
                   </div>
                 </div>
               </div>

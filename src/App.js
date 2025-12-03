@@ -8,6 +8,7 @@ import SignUp from './auth/Singup.jsx';
 import ForgetPassword from './auth/ForgetPassword.jsx';
 import HomeScreen from './screens/HomeScreen.jsx';
 import ProtectedRoute from './screens/components/ProtectedRoute.jsx';
+import RoleProtectedRoute from './screens/components/RoleProtectedRoute.jsx';
 import MealsList from './screens/components/Restaurant_owner/Meals/MealsList.jsx';
 import MealForm from './screens/components/Restaurant_owner/Meals/MealForm.jsx';
 import NavBarLayout from './screens/components/Restaurant_owner/NavBarLayout.jsx';
@@ -34,52 +35,52 @@ export default function App() {
             <Route 
               path="/dashboard" 
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['restaurant_owner']}>
                   <NavBarLayout>
                     <Dashboard />
                   </NavBarLayout>
                 </ProtectedRoute>
               } 
             />
-            {/* Meal Management Routes */}
+            {/* Meal Management Routes - Restaurant Owner Only */}
             <Route 
               path="/meals" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute >
                   <NavBarLayout>
                     <MealsList />
                   </NavBarLayout>
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
               path="/categories" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute >
                   <NavBarLayout>
                     <Categories />
                   </NavBarLayout>
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
               path="/meals/create" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute >
                   <NavBarLayout>
                     <MealForm />
                   </NavBarLayout>
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
               path="/meals/:id/edit" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute >
                   <NavBarLayout>
                     <MealForm />
                   </NavBarLayout>
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
@@ -95,11 +96,11 @@ export default function App() {
             <Route 
               path="/Staffs" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute allowedRoles={['restaurant_owner']}>
                   <NavBarLayout>
                     <Staff />
                   </NavBarLayout>
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
@@ -115,11 +116,11 @@ export default function App() {
             <Route 
               path="/settings" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute allowedRoles={['restaurant_owner']}>
                   <NavBarLayout>
                     <Setting />
                   </NavBarLayout>
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
           </Routes>

@@ -16,12 +16,19 @@ class CategoryApi {
   // CREATE category
   async createCategory(formData) {
     try {
-      // Validate required fields
-      const name = formData.get('name');
-      if (!name || !name.toString().trim()) {
+      // Validate required fields - check if at least one translation exists
+      const nameEn = formData.get('name[en]');
+      const nameAr = formData.get('name[ar]');
+      const nameFr = formData.get('name[fr]');
+      
+      const hasName = (nameEn && nameEn.toString().trim()) || 
+                     (nameAr && nameAr.toString().trim()) || 
+                     (nameFr && nameFr.toString().trim());
+      
+      if (!hasName) {
         throw { 
-          message: 'Name field is required',
-          errors: { name: ['The name field is required.'] },
+          message: 'Name field is required in at least one language',
+          errors: { name: ['The name field is required in at least one language.'] },
           success: false
         };
       }
@@ -36,12 +43,19 @@ class CategoryApi {
   // UPDATE category
   async updateCategory(id, formData) {
     try {
-      // Validate required fields
-      const name = formData.get('name');
-      if (!name || !name.toString().trim()) {
+      // Validate required fields - check if at least one translation exists
+      const nameEn = formData.get('name[en]');
+      const nameAr = formData.get('name[ar]');
+      const nameFr = formData.get('name[fr]');
+      
+      const hasName = (nameEn && nameEn.toString().trim()) || 
+                     (nameAr && nameAr.toString().trim()) || 
+                     (nameFr && nameFr.toString().trim());
+      
+      if (!hasName) {
         throw { 
-          message: 'Name field is required',
-          errors: { name: ['The name field is required.'] },
+          message: 'Name field is required in at least one language',
+          errors: { name: ['The name field is required in at least one language.'] },
           success: false
         };
       }

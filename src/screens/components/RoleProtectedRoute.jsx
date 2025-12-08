@@ -28,8 +28,9 @@ const RoleProtectedRoute = ({ children, allowedRoles = [] }) => {
   const hasAccess = allowedRoles.includes(userRole);
 
   if (!hasAccess) {
-    // Redirect to dashboard or show unauthorized message
-    return <Navigate to="/dashboard" replace />;
+    // Redirect based on user role
+    const redirectPath = userRole === 'admin' ? '/admin/dashboard' : '/dashboard';
+    return <Navigate to={redirectPath} replace />;
   }
 
   return children;

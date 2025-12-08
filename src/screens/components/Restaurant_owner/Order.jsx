@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import orderService from '../../../services/OrderService';
 import mealService from '../../../services/mealsService';
 import { tableService } from '../../../services/tableService';
 import CustomSelect from './components/CustomSelect';
-import { UtensilsCrossed, Table, Filter as FilterIcon, Tag } from 'lucide-react';
+import { UtensilsCrossed, Table, Filter as FilterIcon, Tag, Printer, Calendar } from 'lucide-react';
 
 export default function Order() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const restaurantId = user?.restaurant_id;
 
@@ -18,20 +20,23 @@ export default function Order() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [showCreateForm, setShowCreateForm] = useState(false);
   const [showOrderDetails, setShowOrderDetails] = useState(false);
   
+  // Get today's date in YYYY-MM-DD format
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const [filters, setFilters] = useState({
     status: '',
-    table_id: ''
+    table_id: '',
+    date: getTodayDate() // Default to today's date
   });
 
-  // Form states
-  const [newOrder, setNewOrder] = useState({
-    restaurant_id: restaurantId,
-    table_id: '',
-    order_items: [{ meal_id: '', quantity: 1, price: '' }]
-  });
 
   const normalizeApiResult = (payload) => {
     if (!payload) {
@@ -90,18 +95,8 @@ export default function Order() {
     return [];
   };
 
-  // Fetch initial data
-  useEffect(() => {
-    if (restaurantId) {
-      console.log('Fetching data for restaurant:', restaurantId);
-      fetchOrders();
-      fetchMeals();
-      fetchTables();
-    }
-  }, [restaurantId]);
-
   // Fetch orders
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     if (!restaurantId) return;
     
     setLoading(true);
@@ -123,7 +118,7 @@ export default function Order() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [restaurantId, filters]);
 
   // Fetch meals - FIXED
   const fetchMeals = async () => {
@@ -178,65 +173,45 @@ export default function Order() {
     }
   };
 
-  // Create new order
-  const handleCreateOrder = async (e) => {
-    e.preventDefault();
-    if (!restaurantId) {
-      setError('No restaurant associated with user');
-      return;
+  // Track if initial fetch has been done
+  const [initialFetchDone, setInitialFetchDone] = useState(false);
+
+  // Fetch initial data
+  useEffect(() => {
+    if (restaurantId && !initialFetchDone) {
+      console.log('Fetching initial data for restaurant:', restaurantId);
+      fetchOrders();
+      fetchMeals();
+      fetchTables();
+      setInitialFetchDone(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restaurantId, fetchOrders, initialFetchDone]);
 
-    setLoading(true);
-    setError('');
-    
-    try {
-      const validOrderItems = newOrder.order_items.filter(item => 
-        item.meal_id && item.quantity > 0 && item.price
-      );
-
-      if (validOrderItems.length === 0) {
-        setError('Please add at least one valid order item');
-        return;
-      }
-
-      if (!newOrder.table_id) {
-        setError('Please select a table');
-        return;
-      }
-
-      const orderData = {
-        restaurant_id: restaurantId,
-        table_id: newOrder.table_id,
-        order_items: validOrderItems
-      };
-
-      console.log('Creating order with data:', orderData);
-
-      const result = await orderService.createOrder(orderData);
-      
-      if (result.success) {
-        setSuccess('Order created successfully!');
-        setShowCreateForm(false);
-        resetNewOrderForm();
-        fetchOrders();
-      } else {
-        setError(result.message || 'Failed to create order');
-      }
-    } catch (err) {
-      setError(err.message || 'An error occurred while creating order');
-    } finally {
-      setLoading(false);
+  // Auto-fetch orders when filters change (but not on initial mount)
+  useEffect(() => {
+    if (restaurantId && initialFetchDone) {
+      console.log('Filters changed, fetching orders...');
+      fetchOrders();
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.status, filters.table_id, filters.date, initialFetchDone]);
 
-  // Reset new order form
-  const resetNewOrderForm = () => {
-    setNewOrder({
-      restaurant_id: restaurantId,
-      table_id: '',
-      order_items: [{ meal_id: '', quantity: 1, price: '' }]
-    });
-  };
+  // Auto-refresh orders every 10 seconds
+  useEffect(() => {
+    if (!restaurantId) return;
+
+    const intervalId = setInterval(() => {
+      console.log('Auto-refreshing orders...');
+      fetchOrders();
+    }, 100000); // 10 seconds
+
+    // Cleanup interval on unmount or when dependencies change
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [restaurantId, fetchOrders]);
+
 
   // Update order status
   const handleUpdateStatus = async (orderId, newStatus) => {
@@ -289,54 +264,6 @@ export default function Order() {
     }
   };
 
-  // Add new order item to form
-  const addOrderItem = () => {
-    setNewOrder(prev => ({
-      ...prev,
-      order_items: [...prev.order_items, { meal_id: '', quantity: 1, price: '' }]
-    }));
-  };
-
-  // Remove order item from form
-  const removeOrderItem = (index) => {
-    if (newOrder.order_items.length === 1) return;
-    
-    setNewOrder(prev => ({
-      ...prev,
-      order_items: prev.order_items.filter((_, i) => i !== index)
-    }));
-  };
-
-  // Update order item in form
-  const updateOrderItem = (index, field, value) => {
-    setNewOrder(prev => ({
-      ...prev,
-      order_items: prev.order_items.map((item, i) => {
-        if (i === index) {
-          const updatedItem = { ...item, [field]: value };
-          
-          if (field === 'meal_id' && value) {
-            const selectedMeal = meals.find(meal => meal.id === parseInt(value));
-            if (selectedMeal) {
-              updatedItem.price = selectedMeal.price;
-              console.log('Auto-filled price for meal:', selectedMeal.name, selectedMeal.price);
-            }
-          }
-          
-          return updatedItem;
-        }
-        return item;
-      })
-    }));
-  };
-
-  // Calculate total for order items
-  const calculateTotal = (items) => {
-    return items.reduce((total, item) => {
-      const itemTotal = (item.quantity || 0) * (item.price || 0);
-      return total + itemTotal;
-    }, 0);
-  };
 
   // Get status badge class
   const getStatusClass = (status) => {
@@ -378,6 +305,193 @@ export default function Order() {
   const getTableName = (tableId) => {
     const table = tables.find(t => t.id === tableId);
     return table ? table.name : `Table #${tableId}`;
+  };
+
+  // Print invoice function
+  const handlePrintInvoice = (order) => {
+    const printWindow = window.open('', '_blank');
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Invoice - Order #${order.id}</title>
+          <style>
+            @media print {
+              @page {
+                margin: 20mm;
+              }
+            }
+            body {
+              font-family: Arial, sans-serif;
+              max-width: 800px;
+              margin: 0 auto;
+              padding: 20px;
+              color: #333;
+            }
+            .header {
+              text-align: center;
+              border-bottom: 2px solid #f97316;
+              padding-bottom: 20px;
+              margin-bottom: 30px;
+            }
+            .header h1 {
+              color: #f97316;
+              margin: 0;
+              font-size: 28px;
+            }
+            .header p {
+              margin: 5px 0;
+              color: #666;
+            }
+            .info-section {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 30px;
+            }
+            .info-box {
+              flex: 1;
+            }
+            .info-box h3 {
+              margin: 0 0 10px 0;
+              color: #333;
+              font-size: 14px;
+              text-transform: uppercase;
+            }
+            .info-box p {
+              margin: 5px 0;
+              color: #666;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 20px;
+            }
+            th {
+              background-color: #f97316;
+              color: white;
+              padding: 12px;
+              text-align: left;
+              font-weight: bold;
+            }
+            td {
+              padding: 12px;
+              border-bottom: 1px solid #eee;
+            }
+            tr:last-child td {
+              border-bottom: none;
+            }
+            .text-right {
+              text-align: right;
+            }
+            .total-section {
+              margin-top: 20px;
+              padding-top: 20px;
+              border-top: 2px solid #eee;
+            }
+            .total-row {
+              display: flex;
+              justify-content: space-between;
+              margin: 10px 0;
+              font-size: 16px;
+            }
+            .total-row.final {
+              font-size: 20px;
+              font-weight: bold;
+              color: #f97316;
+              margin-top: 15px;
+              padding-top: 15px;
+              border-top: 2px solid #eee;
+            }
+            .note {
+              background-color: #f9fafb;
+              padding: 10px;
+              border-left: 3px solid #f97316;
+              margin: 5px 0;
+              font-size: 13px;
+            }
+            .footer {
+              margin-top: 40px;
+              text-align: center;
+              color: #999;
+              font-size: 12px;
+              border-top: 1px solid #eee;
+              padding-top: 20px;
+            }
+            .status-badge {
+              display: inline-block;
+              padding: 4px 12px;
+              border-radius: 20px;
+              font-size: 12px;
+              font-weight: bold;
+              text-transform: uppercase;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>${user?.restaurant_name || 'Restaurant'}</h1>
+            <p>Invoice</p>
+          </div>
+          
+          <div class="info-section">
+            <div class="info-box">
+              <h3>Order Information</h3>
+              <p><strong>Order #:</strong> ${order.id}</p>
+              <p><strong>Date:</strong> ${new Date(order.created_at).toLocaleString()}</p>
+              <p><strong>Table:</strong> ${getTableName(order.table_id)}</p>
+              <p><strong>Status:</strong> <span class="status-badge">${order.status}</span></p>
+            </div>
+          </div>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th class="text-right">Price</th>
+                <th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.order_items?.map(item => `
+                <tr>
+                  <td>
+                    ${getMealName(item.meal_id)}
+                    ${item.note ? `<div class="note"><strong>Note:</strong> ${item.note}</div>` : ''}
+                  </td>
+                  <td>${item.quantity}</td>
+                  <td class="text-right">${parseFloat(item.price).toFixed(2)} MAD</td>
+                  <td class="text-right">${((item.quantity || 0) * (item.price || 0)).toFixed(2)} MAD</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          
+          <div class="total-section">
+            <div class="total-row">
+              <span>Subtotal:</span>
+              <span>${parseFloat(order.total).toFixed(2)} MAD</span>
+            </div>
+            <div class="total-row final">
+              <span>Total:</span>
+              <span>${parseFloat(order.total).toFixed(2)} MAD</span>
+            </div>
+          </div>
+          
+          <div class="footer">
+            <p>Thank you for your order!</p>
+            <p>Generated on ${new Date().toLocaleString()}</p>
+          </div>
+        </body>
+      </html>
+    `;
+    
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
   };
 
   const isTableAvailable = (table) => {
@@ -461,7 +575,7 @@ export default function Order() {
             
             <button 
               className="mt-4 lg:mt-0 bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={() => setShowCreateForm(true)}
+              onClick={() => navigate('/orders/create')}
               disabled={loading || dataLoading}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -500,10 +614,14 @@ export default function Order() {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Status</label>
               <CustomSelect
                 icon={Tag}
                 value={filters.status || ''}
-                onChange={(value) => setFilters(prev => ({ ...prev, status: value || '' }))}
+                onChange={(value) => {
+                  setFilters(prev => ({ ...prev, status: value || '' }));
+                  // Filter will auto-apply via useEffect
+                }}
                 placeholder="All Statuses"
                 options={[
                   { value: '', label: 'All Statuses' },
@@ -519,10 +637,14 @@ export default function Order() {
             </div>
 
             <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Table</label>
               <CustomSelect
                 icon={Table}
                 value={filters.table_id?.toString() || ''}
-                onChange={(value) => setFilters(prev => ({ ...prev, table_id: value || '' }))}
+                onChange={(value) => {
+                  setFilters(prev => ({ ...prev, table_id: value || '' }));
+                  // Filter will auto-apply via useEffect
+                }}
                 placeholder="All Tables"
                 options={[
                   { value: '', label: 'All Tables' },
@@ -534,24 +656,44 @@ export default function Order() {
               />
             </div>
 
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Date</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Calendar className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="date"
+                  value={filters.date || ''}
+                  onChange={(e) => {
+                    setFilters(prev => ({ ...prev, date: e.target.value || '' }));
+                    // Filter will auto-apply via useEffect
+                  }}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+                />
+              </div>
+            </div>
+
             <div className="flex gap-2">
               <button 
                 onClick={fetchOrders} 
                 className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loading}
+                title="Manually refresh orders"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                <span>Apply Filters</span>
+                <span>Refresh</span>
               </button>
               
               <button 
-                onClick={() => setFilters({ status: '', table_id: '' })} 
+                onClick={() => setFilters({ status: '', table_id: '', date: getTodayDate() })} 
                 className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-2 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loading}
+                title="Reset filters to default (today's date)"
               >
-                Clear
+                Clear Filters
               </button>
             </div>
           </div>
@@ -610,7 +752,7 @@ export default function Order() {
                       </div>
                       <div className="flex justify-between">
                         <span>Total:</span>
-                        <span className="font-medium text-gray-900">${order.total}</span>
+                        <span className="font-medium text-gray-900">{order.total} MAD</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Items:</span>
@@ -636,19 +778,26 @@ export default function Order() {
                       </button>
                       
                       {orderService.canUpdateOrder(order.status) && (
-                        <select 
-                          value={order.status}
-                          onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                          disabled={loading}
-                        >
-                          <option value={order.status}>Update Status</option>
-                          {orderService.getValidStatusTransitions(order.status).map(status => (
-                            <option key={status} value={status}>
-                              Mark as {status}
-                            </option>
-                          ))}
-                        </select>
+                        <div>
+                          <CustomSelect
+                            icon={Tag}
+                            value={order.status}
+                            onChange={(value) => {
+                              if (value && value !== order.status) {
+                                handleUpdateStatus(order.id, value);
+                              }
+                            }}
+                            placeholder="Update Status"
+                            disabled={loading}
+                            options={[
+                              { value: order.status, label: `${orderService.getStatusLabel(order.status)} (Current)` },
+                              ...orderService.getValidStatusTransitions(order.status).map(status => ({
+                                value: status,
+                                label: orderService.getStatusLabel(status)
+                              }))
+                            ]}
+                          />
+                        </div>
                       )}
 
                       {['pending', 'cancelled'].includes(order.status) && (
@@ -672,173 +821,6 @@ export default function Order() {
         </div>
       </div>
 
-      {/* Create Order Modal */}
-      {showCreateForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Create New Order</h2>
-              <button 
-                className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-100"
-                onClick={() => {
-                  setShowCreateForm(false);
-                  resetNewOrderForm();
-                }}
-                disabled={loading}
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateOrder} className="overflow-y-auto max-h-[calc(90vh-120px)]">
-              <div className="p-6 space-y-6">
-                <div>
-                  <CustomSelect
-                    label="Table"
-                    icon={Table}
-                    required
-                    value={newOrder.table_id ? newOrder.table_id.toString() : ''}
-                    onChange={(value) => setNewOrder(prev => ({ ...prev, table_id: value || '' }))}
-                    placeholder="Select a Table"
-                    options={tables.filter(isTableAvailable).map(table => ({
-                      value: table.id.toString(),
-                      label: `${table.name} (Capacity: ${table.capacity})`
-                    }))}
-                  />
-                  <p className="mt-2 text-sm text-gray-500">
-                    {tables.filter(isTableAvailable).length} tables available
-                    {tables.length === 0 && ' - Loading tables...'}
-                  </p>
-                </div>
-
-                <div className="border border-gray-200 rounded-xl p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-lg font-medium text-gray-900">Order Items</h4>
-                    <button 
-                      type="button" 
-                      className="bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2 text-sm"
-                      onClick={addOrderItem}
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                      <span>Add Item</span>
-                    </button>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {newOrder.order_items.map((item, index) => (
-                      <div key={index} className="bg-gray-50 rounded-lg p-4">
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
-                          <div className="lg:col-span-5">
-                            <CustomSelect
-                              label="Meal"
-                              icon={UtensilsCrossed}
-                              required
-                              value={item.meal_id ? item.meal_id.toString() : ''}
-                              onChange={(value) => updateOrderItem(index, 'meal_id', value || '')}
-                              placeholder="Select a Meal"
-                              options={meals.filter(meal => meal.available).map(meal => ({
-                                value: meal.id.toString(),
-                                label: `${meal.name} - $${meal.price} (${getCategoryLabel(meal.category)})`
-                              }))}
-                            />
-                            {meals.length === 0 && <p className="mt-1 text-sm text-gray-500">Loading meals...</p>}
-                          </div>
-                          
-                          <div className="lg:col-span-3">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
-                            <input
-                              type="number"
-                              min="1"
-                              max="99"
-                              required
-                              value={item.quantity}
-                              onChange={(e) => updateOrderItem(index, 'quantity', parseInt(e.target.value) || 1)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
-                            />
-                          </div>
-                          
-                          <div className="lg:col-span-3">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
-                            <input
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              required
-                              value={item.price}
-                              onChange={(e) => updateOrderItem(index, 'price', parseFloat(e.target.value) || 0)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
-                            />
-                          </div>
-                          
-                          <div className="lg:col-span-1">
-                            <button
-                              type="button"
-                              className="w-full bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                              onClick={() => removeOrderItem(index)}
-                              disabled={newOrder.order_items.length === 1}
-                            >
-                              <svg className="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-6 pt-4 border-t border-gray-200">
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold text-gray-900">Total:</span>
-                      <span className="text-2xl font-bold text-orange-600">
-                        ${calculateTotal(newOrder.order_items).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 bg-gray-50">
-                <button 
-                  type="button" 
-                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={() => {
-                    setShowCreateForm(false);
-                    resetNewOrderForm();
-                  }}
-                  disabled={loading}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="px-6 py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                  disabled={loading || meals.length === 0 || tables.length === 0}
-                >
-                  {loading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Creating...</span>
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>Create Order</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
       {/* Order Details Modal */}
       {showOrderDetails && selectedOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fade-in">
@@ -861,10 +843,31 @@ export default function Order() {
                   <h4 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusClass(selectedOrder.status)}`}>
-                        {selectedOrder.status}
-                      </span>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                      {orderService.canUpdateOrder(selectedOrder.status) ? (
+                        <CustomSelect
+                          icon={Tag}
+                          value={selectedOrder.status}
+                          onChange={(value) => {
+                            if (value && value !== selectedOrder.status) {
+                              handleUpdateStatus(selectedOrder.id, value);
+                            }
+                          }}
+                          placeholder="Update Status"
+                          disabled={loading}
+                          options={[
+                            { value: selectedOrder.status, label: `${orderService.getStatusLabel(selectedOrder.status)} (Current)` },
+                            ...orderService.getValidStatusTransitions(selectedOrder.status).map(status => ({
+                              value: status,
+                              label: orderService.getStatusLabel(status)
+                            }))
+                          ]}
+                        />
+                      ) : (
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusClass(selectedOrder.status)}`}>
+                          {selectedOrder.status}
+                        </span>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Table</label>
@@ -872,7 +875,7 @@ export default function Order() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Total Amount</label>
-                      <p className="text-gray-900 font-medium">${selectedOrder.total}</p>
+                      <p className="text-gray-900 font-medium">{selectedOrder.total} MAD</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Created</label>
@@ -890,13 +893,21 @@ export default function Order() {
                           <div className="flex items-start justify-between mb-2">
                             <h5 className="font-medium text-gray-900">{getMealName(item.meal_id)}</h5>
                             <span className="font-semibold text-gray-900">
-                              ${((item.quantity || 0) * (item.price || 0)).toFixed(2)}
+                              {((item.quantity || 0) * (item.price || 0)).toFixed(2)} MAD
                             </span>
                           </div>
                           <div className="flex items-center space-x-4 text-sm text-gray-600">
                             <span>Quantity: {item.quantity}</span>
                             <span>Price: ${item.price} each</span>
                           </div>
+                          {item.note && (
+                            <div className="mt-2 pt-2 border-t border-gray-200">
+                              <p className="text-sm text-gray-700">
+                                <span className="font-medium">Note: </span>
+                                <span className="text-gray-600">{item.note}</span>
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -905,6 +916,13 @@ export default function Order() {
               </div>
 
               <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 bg-gray-50">
+                <button 
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2"
+                  onClick={() => handlePrintInvoice(selectedOrder)}
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>Print Invoice</span>
+                </button>
                 <button 
                   className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200"
                   onClick={() => setShowOrderDetails(false)}

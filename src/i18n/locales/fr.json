@@ -1,0 +1,195 @@
+{
+  "header": {
+    "kitchenActive": "Cuisine Active",
+    "order": "Commande",
+    "table": "Table"
+  },
+  "search": {
+    "placeholder": "Rechercher dans le menu..."
+  },
+  "categories": {
+    "title": "Catégories",
+    "findBestFood": "Trouvez la meilleure nourriture",
+    "all": "Tous",
+    "allCategories": "Toutes les catégories",
+    "items": "articles",
+    "inCart": "dans le panier"
+  },
+  "filters": {
+    "title": "Filtrer",
+    "allItems": "Tous les articles",
+    "available": "Disponible",
+    "popular": "Populaire",
+    "vegetarian": "Végétarien"
+  },
+  "sort": {
+    "title": "Trier par",
+    "default": "Par défaut",
+    "priceLow": "Prix: Du plus bas au plus élevé",
+    "priceHigh": "Prix: Du plus élevé au plus bas",
+    "mostPopular": "Le plus populaire",
+    "nameAZ": "Nom: A-Z"
+  },
+  "meals": {
+    "soldOut": "Épuisé",
+    "add": "Ajouter",
+    "added": "Ajouté",
+    "spicy": "Épicé",
+    "veg": "Végé",
+    "noItemsFound": "Aucun article trouvé",
+    "tryAdjusting": "Essayez d'ajuster votre recherche ou votre filtre"
+  },
+  "cart": {
+    "title": "Votre commande",
+    "empty": "Votre panier est vide",
+    "addItems": "Ajoutez des articles pour commencer",
+    "addOn": "Ajouter",
+    "kitchenReady": "Cuisine prête",
+    "estTime": "Est: 15-20 min",
+    "subTotal": "Sous-total",
+    "tax": "Taxe (10%)",
+    "serviceFee": "Frais de service",
+    "total": "Total",
+    "placeOrder": "Passer la commande",
+    "orderSent": "La commande sera envoyée à la cuisine immédiatement",
+    "processing": "Traitement...",
+    "extraSauce": "Sauce supplémentaire",
+    "addNote": "Ajouter une note..."
+  },
+  "orderTracking": {
+    "title": "Suivi de commande",
+    "refresh": "Actualiser",
+    "noOrders": "Aucune commande trouvée",
+    "noOrdersDesc": "Vous n'avez pas encore passé de commande.",
+    "loading": "Chargement des commandes...",
+    "order": "Commande",
+    "orderProgress": "Progression de la commande",
+    "items": "Articles:",
+    "moreItems": "articles supplémentaires"
+  },
+  "orderSuccess": {
+    "title": "Commande confirmée!",
+    "message": "Votre commande a été envoyée à la cuisine",
+    "estTime": "Temps de préparation estimé:",
+    "continueShopping": "Continuer les achats"
+  },
+  "status": {
+    "pending": "En attente",
+    "confirmed": "Confirmé",
+    "preparing": "En préparation",
+    "ready": "Prêt",
+    "served": "Servi",
+    "completed": "Terminé",
+    "cancelled": "Annulé"
+  },
+  "errors": {
+    "error": "Erreur",
+    "tryAgain": "Réessayer",
+    "loadingMenu": "Chargement du menu...",
+    "noMenuData": "Aucune donnée de menu disponible",
+    "failedToLoad": "Échec du chargement du menu"
+  },
+  "language": {
+    "english": "English",
+    "french": "Français",
+    "arabic": "العربية"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Tableau de bord Admin",
+      "description": "Vue d'ensemble et statistiques du système",
+      "totalRestaurants": "Total Restaurants",
+      "totalUsers": "Total Utilisateurs",
+      "totalOrders": "Total Commandes",
+      "totalSales": "Total Ventes",
+      "blockedRestaurants": "Restaurants Bloqués",
+      "blockedUsers": "Utilisateurs Bloqués",
+      "avgOrderValue": "Valeur Moyenne Commande",
+      "topRestaurants": "Top Restaurants par Ventes",
+      "ordersByStatus": "Commandes par Statut",
+      "salesChart": "Ventes sur les 30 Derniers Jours",
+      "recentOrders": "Commandes Récentes"
+    },
+    "restaurants": {
+      "title": "Restaurants",
+      "description": "Gérer tous les restaurants du système",
+      "addRestaurant": "Ajouter Restaurant",
+      "editRestaurant": "Modifier Restaurant",
+      "createRestaurant": "Créer Restaurant",
+      "restaurantDetails": "Détails Restaurant",
+      "search": "Rechercher restaurants...",
+      "allStatus": "Tous Statuts",
+      "active": "Actif",
+      "blocked": "Bloqué",
+      "name": "Nom",
+      "owner": "Propriétaire",
+      "location": "Localisation",
+      "stats": "Statistiques",
+      "status": "Statut",
+      "actions": "Actions",
+      "viewDetails": "Voir Détails",
+      "edit": "Modifier",
+      "block": "Bloquer",
+      "activate": "Activer",
+      "delete": "Supprimer",
+      "restaurantInfo": "Informations Restaurant",
+      "ownerInfo": "Informations Propriétaire",
+      "phone": "Téléphone",
+      "plan": "Plan",
+      "address": "Adresse",
+      "city": "Ville",
+      "country": "Pays",
+      "logo": "URL Logo",
+      "coverImage": "URL Image de Couverture",
+      "slug": "Slug",
+      "ownerName": "Nom Propriétaire",
+      "ownerEmail": "Email Propriétaire",
+      "ownerPassword": "Mot de passe Propriétaire",
+      "ownerPhone": "Téléphone Propriétaire"
+    },
+    "users": {
+      "title": "Utilisateurs",
+      "description": "Gérer tous les utilisateurs du système",
+      "addUser": "Ajouter Utilisateur",
+      "editUser": "Modifier Utilisateur",
+      "createUser": "Créer Utilisateur",
+      "userDetails": "Détails Utilisateur",
+      "search": "Rechercher utilisateurs...",
+      "allRoles": "Tous Rôles",
+      "restaurantOwner": "Propriétaire Restaurant",
+      "staff": "Personnel",
+      "user": "Utilisateur",
+      "role": "Rôle",
+      "restaurant": "Restaurant",
+      "contact": "Contact",
+      "name": "Nom",
+      "email": "Email",
+      "password": "Mot de passe",
+      "leaveBlank": "Laisser vide pour garder le mot de passe actuel",
+      "selectRestaurant": "Sélectionner Restaurant",
+      "avatar": "URL Avatar",
+      "createdAt": "Créé le",
+      "updatedAt": "Mis à jour le"
+    },
+    "common": {
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "delete": "Supprimer",
+      "edit": "Modifier",
+      "view": "Voir",
+      "active": "Actif",
+      "blocked": "Bloqué",
+      "noData": "Aucune donnée disponible",
+      "loading": "Chargement...",
+      "error": "Erreur",
+      "retry": "Réessayer",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "showing": "Affichage",
+      "to": "à",
+      "of": "de",
+      "results": "résultats"
+    }
+  }
+}
+

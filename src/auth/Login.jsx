@@ -12,15 +12,24 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      // Redirect based on user role
+      let redirectPath = '/dashboard'; // default
+      if (user?.role === 'admin') {
+        redirectPath = '/admin/dashboard';
+      } else if (user?.role === 'staff') {
+        redirectPath = '/Restaurant_Tables';
+      } else if (user?.role === 'restaurant_owner') {
+        redirectPath = '/dashboard';
+      }
+      navigate(redirectPath);
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -75,7 +84,17 @@ export default function Login() {
       
       if (result.success) {
         console.log('Login successful');
-        // AuthContext will handle the redirect via useEffect
+        // Get user data from the result to determine redirect
+        const userData = result.data?.user;
+        let redirectPath = '/dashboard'; // default
+        if (userData?.role === 'admin') {
+          redirectPath = '/admin/dashboard';
+        } else if (userData?.role === 'staff') {
+          redirectPath = '/Restaurant_Tables';
+        } else if (userData?.role === 'restaurant_owner') {
+          redirectPath = '/dashboard';
+        }
+        navigate(redirectPath);
       } else {
         setErrors({ submit: result.message || 'Login failed' });
       }

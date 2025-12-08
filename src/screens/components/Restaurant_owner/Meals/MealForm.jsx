@@ -58,8 +58,8 @@ const MealForm = () => {
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     category_id: '',
-    name: { en: '', ar: '' },
-    description: { en: '', ar: '' },
+    name: { en: '', ar: '', fr: '' },
+    description: { en: '', ar: '', fr: '' },
     price: '',
     image: null,
     available: true,
@@ -93,12 +93,12 @@ const MealForm = () => {
       const response = await mealsService.getMeal(id);
       const meal = response.data;
       
-      const nameTranslations = { en: '', ar: '' };
-      const descriptionTranslations = { en: '', ar: '' };
+      const nameTranslations = { en: '', ar: '', fr: '' };
+      const descriptionTranslations = { en: '', ar: '', fr: '' };
 
       if (meal.translations) {
         meal.translations.forEach(trans => {
-          if (trans.locale === 'en' || trans.locale === 'ar') {
+          if (trans.locale === 'en' || trans.locale === 'ar' || trans.locale === 'fr') {
             nameTranslations[trans.locale] = trans.name || '';
             descriptionTranslations[trans.locale] = trans.description || '';
           }
@@ -366,6 +366,43 @@ setImagePreview(meal.image);
                           placeholder="Describe your meal in English..."
                           value={formData.description.en}
                           onChange={(e) => handleTranslationChange('description', 'en', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* French Translation */}
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6 rounded-xl border border-blue-100">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
+                      <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
+                      French Translation
+                    </h3>
+                    
+                    <div className="space-y-3 sm:space-y-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Name *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          className="w-full p-3 sm:p-4 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 bg-white shadow-sm text-sm sm:text-base"
+                          placeholder="Entrez le nom du plat en français"
+                          value={formData.name.fr}
+                          onChange={(e) => handleTranslationChange('name', 'fr', e.target.value)}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Description
+                        </label>
+                        <textarea
+                          rows="4"
+                          className="w-full p-3 sm:p-4 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 bg-white shadow-sm resize-none text-sm sm:text-base"
+                          placeholder="Décrivez votre plat en français..."
+                          value={formData.description.fr}
+                          onChange={(e) => handleTranslationChange('description', 'fr', e.target.value)}
                         />
                       </div>
                     </div>

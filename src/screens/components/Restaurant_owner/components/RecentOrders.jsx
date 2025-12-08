@@ -38,7 +38,7 @@ const RecentOrders = ({ orders = [] }) => {
                   </div>
                   <div className="text-left sm:text-right w-full sm:w-auto">
                     <p className="font-semibold text-sm sm:text-base text-gray-900">
-                      €{order.total_price}
+                      {order.total_price} MAD
                     </p>
                     <span className={`inline-flex items-center px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                       {order.status}

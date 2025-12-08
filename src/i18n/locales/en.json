@@ -1,0 +1,195 @@
+{
+  "header": {
+    "kitchenActive": "Kitchen Active",
+    "order": "Order",
+    "table": "Table"
+  },
+  "search": {
+    "placeholder": "Search menu here..."
+  },
+  "categories": {
+    "title": "Categories",
+    "findBestFood": "Find the best food",
+    "all": "All",
+    "allCategories": "All Categories",
+    "items": "items",
+    "inCart": "in cart"
+  },
+  "filters": {
+    "title": "Filter",
+    "allItems": "All Items",
+    "available": "Available",
+    "popular": "Popular",
+    "vegetarian": "Vegetarian"
+  },
+  "sort": {
+    "title": "Sort By",
+    "default": "Default",
+    "priceLow": "Price: Low to High",
+    "priceHigh": "Price: High to Low",
+    "mostPopular": "Most Popular",
+    "nameAZ": "Name: A-Z"
+  },
+  "meals": {
+    "soldOut": "Sold Out",
+    "add": "Add",
+    "added": "Added",
+    "spicy": "Spicy",
+    "veg": "Veg",
+    "noItemsFound": "No items found",
+    "tryAdjusting": "Try adjusting your search or filter"
+  },
+  "cart": {
+    "title": "Your Order",
+    "empty": "Your cart is empty",
+    "addItems": "Add items to get started",
+    "addOn": "Add-On",
+    "kitchenReady": "Kitchen Ready",
+    "estTime": "Est: 15-20 min",
+    "subTotal": "Sub Total",
+    "tax": "Tax (10%)",
+    "serviceFee": "Service Fee",
+    "total": "Total",
+    "placeOrder": "Place Order",
+    "orderSent": "Order will be sent to kitchen immediately",
+    "processing": "Processing...",
+    "extraSauce": "Extra Sauce",
+    "addNote": "Add note..."
+  },
+  "orderTracking": {
+    "title": "Order Tracking",
+    "refresh": "Refresh",
+    "noOrders": "No Orders Found",
+    "noOrdersDesc": "You haven't placed any orders yet.",
+    "loading": "Loading orders...",
+    "order": "Order",
+    "orderProgress": "Order Progress",
+    "items": "Items:",
+    "moreItems": "more items"
+  },
+  "orderSuccess": {
+    "title": "Order Confirmed!",
+    "message": "Your order has been sent to the kitchen",
+    "estTime": "Estimated preparation time:",
+    "continueShopping": "Continue Shopping"
+  },
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "preparing": "Preparing",
+    "ready": "Ready",
+    "served": "Served",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "errors": {
+    "error": "Error",
+    "tryAgain": "Try Again",
+    "loadingMenu": "Loading menu...",
+    "noMenuData": "No menu data available",
+    "failedToLoad": "Failed to load menu"
+  },
+  "language": {
+    "english": "English",
+    "french": "Français",
+    "arabic": "العربية"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "description": "System overview and analytics",
+      "totalRestaurants": "Total Restaurants",
+      "totalUsers": "Total Users",
+      "totalOrders": "Total Orders",
+      "totalSales": "Total Sales",
+      "blockedRestaurants": "Blocked Restaurants",
+      "blockedUsers": "Blocked Users",
+      "avgOrderValue": "Avg Order Value",
+      "topRestaurants": "Top Restaurants by Sales",
+      "ordersByStatus": "Orders by Status",
+      "salesChart": "Sales Over Last 30 Days",
+      "recentOrders": "Recent Orders"
+    },
+    "restaurants": {
+      "title": "Restaurants",
+      "description": "Manage all restaurants in the system",
+      "addRestaurant": "Add Restaurant",
+      "editRestaurant": "Edit Restaurant",
+      "createRestaurant": "Create Restaurant",
+      "restaurantDetails": "Restaurant Details",
+      "search": "Search restaurants...",
+      "allStatus": "All Status",
+      "active": "Active",
+      "blocked": "Blocked",
+      "name": "Name",
+      "owner": "Owner",
+      "location": "Location",
+      "stats": "Stats",
+      "status": "Status",
+      "actions": "Actions",
+      "viewDetails": "View Details",
+      "edit": "Edit",
+      "block": "Block",
+      "activate": "Activate",
+      "delete": "Delete",
+      "restaurantInfo": "Restaurant Information",
+      "ownerInfo": "Owner Information",
+      "phone": "Phone",
+      "plan": "Plan",
+      "address": "Address",
+      "city": "City",
+      "country": "Country",
+      "logo": "Logo URL",
+      "coverImage": "Cover Image URL",
+      "slug": "Slug",
+      "ownerName": "Owner Name",
+      "ownerEmail": "Owner Email",
+      "ownerPassword": "Owner Password",
+      "ownerPhone": "Owner Phone"
+    },
+    "users": {
+      "title": "Users",
+      "description": "Manage all users in the system",
+      "addUser": "Add User",
+      "editUser": "Edit User",
+      "createUser": "Create User",
+      "userDetails": "User Details",
+      "search": "Search users...",
+      "allRoles": "All Roles",
+      "restaurantOwner": "Restaurant Owner",
+      "staff": "Staff",
+      "user": "User",
+      "role": "Role",
+      "restaurant": "Restaurant",
+      "contact": "Contact",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "leaveBlank": "Leave blank to keep current password",
+      "selectRestaurant": "Select Restaurant",
+      "avatar": "Avatar URL",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "save": "Save",
+      "delete": "Delete",
+      "edit": "Edit",
+      "view": "View",
+      "active": "Active",
+      "blocked": "Blocked",
+      "noData": "No data available",
+      "loading": "Loading...",
+      "error": "Error",
+      "retry": "Retry",
+      "previous": "Previous",
+      "next": "Next",
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "results": "results"
+    }
+  }
+}
+

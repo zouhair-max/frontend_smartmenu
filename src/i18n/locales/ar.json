@@ -1,0 +1,195 @@
+{
+  "header": {
+    "kitchenActive": "المطبخ نشط",
+    "order": "الطلب",
+    "table": "الطاولة"
+  },
+  "search": {
+    "placeholder": "ابحث في القائمة هنا..."
+  },
+  "categories": {
+    "title": "الفئات",
+    "findBestFood": "ابحث عن أفضل طعام",
+    "all": "الكل",
+    "allCategories": "جميع الفئات",
+    "items": "عناصر",
+    "inCart": "في السلة"
+  },
+  "filters": {
+    "title": "تصفية",
+    "allItems": "جميع العناصر",
+    "available": "متاح",
+    "popular": "شائع",
+    "vegetarian": "نباتي"
+  },
+  "sort": {
+    "title": "ترتيب حسب",
+    "default": "افتراضي",
+    "priceLow": "السعر: من الأقل إلى الأعلى",
+    "priceHigh": "السعر: من الأعلى إلى الأقل",
+    "mostPopular": "الأكثر شعبية",
+    "nameAZ": "الاسم: أ-ي"
+  },
+  "meals": {
+    "soldOut": "نفد",
+    "add": "أضف",
+    "added": "تم الإضافة",
+    "spicy": "حار",
+    "veg": "نباتي",
+    "noItemsFound": "لم يتم العثور على عناصر",
+    "tryAdjusting": "حاول تعديل البحث أو الفلتر"
+  },
+  "cart": {
+    "title": "طلبك",
+    "empty": "سلة التسوق فارغة",
+    "addItems": "أضف عناصر للبدء",
+    "addOn": "إضافة",
+    "kitchenReady": "المطبخ جاهز",
+    "estTime": "التقدير: 15-20 دقيقة",
+    "subTotal": "المجموع الفرعي",
+    "tax": "الضريبة (10%)",
+    "serviceFee": "رسوم الخدمة",
+    "total": "الإجمالي",
+    "placeOrder": "تأكيد الطلب",
+    "orderSent": "سيتم إرسال الطلب إلى المطبخ فوراً",
+    "processing": "جاري المعالجة...",
+    "extraSauce": "صلصة إضافية",
+    "addNote": "أضف ملاحظة..."
+  },
+  "orderTracking": {
+    "title": "تتبع الطلب",
+    "refresh": "تحديث",
+    "noOrders": "لم يتم العثور على طلبات",
+    "noOrdersDesc": "لم تقم بتقديم أي طلبات بعد.",
+    "loading": "جاري تحميل الطلبات...",
+    "order": "الطلب",
+    "orderProgress": "تقدم الطلب",
+    "items": "العناصر:",
+    "moreItems": "عناصر إضافية"
+  },
+  "orderSuccess": {
+    "title": "تم تأكيد الطلب!",
+    "message": "تم إرسال طلبك إلى المطبخ",
+    "estTime": "الوقت المقدر للتحضير:",
+    "continueShopping": "متابعة التسوق"
+  },
+  "status": {
+    "pending": "قيد الانتظار",
+    "confirmed": "مؤكد",
+    "preparing": "قيد التحضير",
+    "ready": "جاهز",
+    "served": "تم التقديم",
+    "completed": "مكتمل",
+    "cancelled": "ملغى"
+  },
+  "errors": {
+    "error": "خطأ",
+    "tryAgain": "حاول مرة أخرى",
+    "loadingMenu": "جاري تحميل القائمة...",
+    "noMenuData": "لا توجد بيانات قائمة متاحة",
+    "failedToLoad": "فشل تحميل القائمة"
+  },
+  "language": {
+    "english": "English",
+    "french": "Français",
+    "arabic": "العربية"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "لوحة تحكم المسؤول",
+      "description": "نظرة عامة على النظام والإحصائيات",
+      "totalRestaurants": "إجمالي المطاعم",
+      "totalUsers": "إجمالي المستخدمين",
+      "totalOrders": "إجمالي الطلبات",
+      "totalSales": "إجمالي المبيعات",
+      "blockedRestaurants": "المطاعم المحظورة",
+      "blockedUsers": "المستخدمون المحظورون",
+      "avgOrderValue": "متوسط قيمة الطلب",
+      "topRestaurants": "أفضل المطاعم بالمبيعات",
+      "ordersByStatus": "الطلبات حسب الحالة",
+      "salesChart": "المبيعات خلال آخر 30 يوماً",
+      "recentOrders": "الطلبات الأخيرة"
+    },
+    "restaurants": {
+      "title": "المطاعم",
+      "description": "إدارة جميع المطاعم في النظام",
+      "addRestaurant": "إضافة مطعم",
+      "editRestaurant": "تعديل مطعم",
+      "createRestaurant": "إنشاء مطعم",
+      "restaurantDetails": "تفاصيل المطعم",
+      "search": "البحث عن المطاعم...",
+      "allStatus": "جميع الحالات",
+      "active": "نشط",
+      "blocked": "محظور",
+      "name": "الاسم",
+      "owner": "المالك",
+      "location": "الموقع",
+      "stats": "الإحصائيات",
+      "status": "الحالة",
+      "actions": "الإجراءات",
+      "viewDetails": "عرض التفاصيل",
+      "edit": "تعديل",
+      "block": "حظر",
+      "activate": "تفعيل",
+      "delete": "حذف",
+      "restaurantInfo": "معلومات المطعم",
+      "ownerInfo": "معلومات المالك",
+      "phone": "الهاتف",
+      "plan": "الخطة",
+      "address": "العنوان",
+      "city": "المدينة",
+      "country": "الدولة",
+      "logo": "رابط الشعار",
+      "coverImage": "رابط صورة الغلاف",
+      "slug": "الرابط المختصر",
+      "ownerName": "اسم المالك",
+      "ownerEmail": "بريد المالك",
+      "ownerPassword": "كلمة مرور المالك",
+      "ownerPhone": "هاتف المالك"
+    },
+    "users": {
+      "title": "المستخدمون",
+      "description": "إدارة جميع المستخدمين في النظام",
+      "addUser": "إضافة مستخدم",
+      "editUser": "تعديل مستخدم",
+      "createUser": "إنشاء مستخدم",
+      "userDetails": "تفاصيل المستخدم",
+      "search": "البحث عن المستخدمين...",
+      "allRoles": "جميع الأدوار",
+      "restaurantOwner": "مالك المطعم",
+      "staff": "موظف",
+      "user": "مستخدم",
+      "role": "الدور",
+      "restaurant": "المطعم",
+      "contact": "جهة الاتصال",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "leaveBlank": "اتركه فارغاً للاحتفاظ بكلمة المرور الحالية",
+      "selectRestaurant": "اختر مطعماً",
+      "avatar": "رابط الصورة الشخصية",
+      "createdAt": "تاريخ الإنشاء",
+      "updatedAt": "تاريخ التحديث"
+    },
+    "common": {
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "delete": "حذف",
+      "edit": "تعديل",
+      "view": "عرض",
+      "active": "نشط",
+      "blocked": "محظور",
+      "noData": "لا توجد بيانات متاحة",
+      "loading": "جاري التحميل...",
+      "error": "خطأ",
+      "retry": "إعادة المحاولة",
+      "previous": "السابق",
+      "next": "التالي",
+      "showing": "عرض",
+      "to": "إلى",
+      "of": "من",
+      "results": "نتائج"
+    }
+  }
+}
+

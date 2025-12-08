@@ -25,13 +25,13 @@ const BestSellingProducts = ({ products = [] }) => {
                     <div className="min-w-0 flex-1">
                       <p className="font-medium text-sm sm:text-base text-gray-900 truncate">{product.name}</p>
                       <p className="text-xs sm:text-sm text-gray-600">
-                        €{product.price} × {product.total_sold} sold
+                        {product.price} MAD × {product.total_sold} sold
                       </p>
                     </div>
                   </div>
                   <div className="text-left sm:text-right w-full sm:w-auto">
                     <p className="font-semibold text-sm sm:text-base text-green-600">
-                      €{product.revenue.toFixed(2)}
+                      {product.revenue.toFixed(2)} MAD
                     </p>
                     <p className="text-xs sm:text-sm text-gray-600">
                       Revenue

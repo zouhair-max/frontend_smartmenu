@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Image, X, Search, Grid, List, Loader, ChefHat, Utensils, Menu } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Edit, Trash2, Image, X, Search, Grid, List, ChefHat, Utensils, Menu } from 'lucide-react';
 import CategoryApi from '../../../services/categoryApi';
+import { getCategoryName } from '../../../utils/translations';
 
 export default function Categories() {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [modalLoading, setModalLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [editingCategory, setEditingCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('grid');
-  const [formData, setFormData] = useState({
-    name: '',
-    order: 0,
-    image: null
-  });
-  const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
     fetchCategories();
@@ -42,98 +36,8 @@ export default function Categories() {
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: name === 'order' ? parseInt(value) || 0 : value 
-    }));
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        setError('Please select a valid image file');
-        return;
-      }
-      
-      if (file.size > 5 * 1024 * 1024) {
-        setError('Image size should be less than 5MB');
-        return;
-      }
-
-      setFormData(prev => ({ ...prev, image: file }));
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setModalLoading(true);
-    setError('');
-    setSuccess('');
-
-    if (!formData.name.trim()) {
-      setError('Category name is required');
-      setModalLoading(false);
-      return;
-    }
-
-    try {
-      const submitData = new FormData();
-      submitData.append('name', formData.name.trim());
-      submitData.append('order', formData.order.toString());
-      
-      if (formData.image) {
-        submitData.append('image', formData.image);
-      }
-
-      let result;
-      if (editingCategory) {
-        result = await CategoryApi.updateCategory(editingCategory.id, submitData);
-      } else {
-        result = await CategoryApi.createCategory(submitData);
-      }
-
-      if (result.success) {
-        setSuccess(editingCategory ? 'Category updated successfully!' : 'Category created successfully!');
-        resetForm();
-        fetchCategories();
-      } else {
-        setError(result.message || 'Operation failed');
-      }
-    } catch (err) {
-      console.error('API Error:', err);
-      if (err.errors) {
-        const errorMessages = Object.entries(err.errors)
-          .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
-          .join('; ');
-        setError(`Validation errors: ${errorMessages}`);
-      } else if (err.message) {
-        setError(err.message);
-      } else {
-        setError('An unexpected error occurred');
-      }
-    } finally {
-      setModalLoading(false);
-    }
-  };
-
   const handleEdit = (category) => {
-    setEditingCategory(category);
-    setFormData({
-      name: category.name,
-      order: category.order,
-      image: null
-    });
-    setPreviewUrl(category.image_url || category.image || null);
-    setShowModal(true);
-    setError('');
+    navigate(`/categories/${category.id}/edit`);
   };
 
   const handleDelete = async (id) => {
@@ -155,21 +59,14 @@ export default function Categories() {
     }
   };
 
-  const resetForm = () => {
-    setFormData({ name: '', order: 0, image: null });
-    setEditingCategory(null);
-    setPreviewUrl(null);
-    setShowModal(false);
-    setError('');
-    setModalLoading(false);
-  };
 
   const clearError = () => setError('');
   const clearSuccess = () => setSuccess('');
 
-  const filteredCategories = categories.filter(cat =>
-    cat.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCategories = categories.filter(cat => {
+    const categoryName = getCategoryName(cat, 'en') || cat.name || '';
+    return categoryName.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   // Enhanced Loading Component with Orange/Amber Theme
   const CategoriesLoadingSpinner = () => (
@@ -247,7 +144,7 @@ export default function Categories() {
               </p>
             </div>
             <button 
-              onClick={() => setShowModal(true)}
+              onClick={() => navigate('/categories/create')}
               disabled={loading}
               className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-medium shadow-lg shadow-orange-500/30 transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
             >
@@ -330,7 +227,7 @@ export default function Categories() {
             </p>
             {!searchTerm && (
               <button
-                onClick={() => setShowModal(true)}
+                onClick={() => navigate('/categories/create')}
                 disabled={loading}
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 disabled:opacity-50 text-sm sm:text-base"
               >
@@ -353,7 +250,7 @@ export default function Categories() {
                   {category.image ? (
                     <img
                       src={`http://127.0.0.1:8000/storage/${category.image}`}
-                      alt={category.name}
+                      alt={getCategoryName(category, 'en') || category.name}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
                     />
@@ -381,7 +278,7 @@ export default function Categories() {
                 </div>
                 <div className="p-3 sm:p-4">
                   <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1 line-clamp-1">
-                    {category.name}
+                    {getCategoryName(category, 'en') || category.name}
                   </h3>
                   <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500">
                     <span>Order: {category.order}</span>
@@ -406,7 +303,7 @@ export default function Categories() {
                   {category.image ? (
                     <img
                       src={`http://127.0.0.1:8000/storage/${category.image}`}
-                      alt={category.name}
+                      alt={getCategoryName(category, 'en') || category.name}
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
@@ -416,7 +313,7 @@ export default function Categories() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-0.5 sm:mb-1 truncate">
-                    {category.name}
+                    {getCategoryName(category, 'en') || category.name}
                   </h3>
                   <p className="text-xs sm:text-sm text-gray-500">
                     Order: {category.order} • ID: {category.id}
@@ -443,134 +340,6 @@ export default function Categories() {
           </div>
         )}
       </div>
-
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in">
-          <div className="bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto animate-scale-in border border-orange-100">
-            <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-orange-200 px-4 sm:px-6 py-4 flex items-center justify-between z-10">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-                {editingCategory ? 'Edit Category' : 'Add Category'}
-              </h2>
-              <button
-                onClick={resetForm}
-                disabled={modalLoading}
-                className="p-1.5 sm:p-2 hover:bg-orange-50 rounded-lg transition-colors duration-200 disabled:opacity-50"
-              >
-                <X size={18} className="sm:w-5 sm:h-5 text-gray-600" />
-              </button>
-            </div>
-            
-            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category Name *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  disabled={modalLoading}
-                  className="w-full px-3 sm:px-4 py-2.5 border border-orange-300 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:opacity-50 text-sm sm:text-base transition-colors bg-white/50"
-                  placeholder="e.g., Appetizers, Main Courses"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Display Order
-                </label>
-                <input
-                  type="number"
-                  name="order"
-                  value={formData.order}
-                  onChange={handleInputChange}
-                  disabled={modalLoading}
-                  className="w-full px-3 sm:px-4 py-2.5 border border-orange-300 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:opacity-50 text-sm sm:text-base transition-colors bg-white/50"
-                  placeholder="0"
-                  min="0"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category Image
-                </label>
-                <div className="space-y-3">
-                  {previewUrl && (
-                    <div className="relative w-full h-32 sm:h-40 rounded-lg sm:rounded-xl overflow-hidden bg-orange-50 border border-orange-200">
-                      <img
-                        src={previewUrl}
-                        alt="Preview"
-                        className="w-full h-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => { 
-                          setPreviewUrl(null); 
-                          setFormData(prev => ({ ...prev, image: null })); 
-                        }}
-                        disabled={modalLoading}
-                        className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 p-1 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-200 hover:scale-110 disabled:opacity-50"
-                      >
-                        <X size={14} className="sm:w-4 sm:h-4" />
-                      </button>
-                    </div>
-                  )}
-                  <label className={`flex flex-col items-center justify-center w-full h-24 sm:h-32 border-2 border-dashed rounded-lg sm:rounded-xl cursor-pointer transition-all duration-200 ${
-                    modalLoading 
-                      ? 'opacity-50 cursor-not-allowed border-orange-300' 
-                      : 'border-orange-300 hover:border-orange-500 hover:bg-orange-50/50'
-                  }`}>
-                    <Image size={24} className="sm:w-8 sm:h-8 text-orange-400 mb-1 sm:mb-2" />
-                    <span className="text-xs sm:text-sm text-gray-600 text-center px-2">
-                      Click to upload image
-                    </span>
-                    <input
-                      type="file"
-                      name="image"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      disabled={modalLoading}
-                      className="hidden"
-                    />
-                  </label>
-                  <p className="text-xs text-gray-500 text-center">
-                    Supported formats: JPEG, PNG, GIF • Max size: 5MB
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-2 sm:gap-3 pt-3 sm:pt-4">
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  disabled={modalLoading}
-                  className="flex-1 px-4 py-2.5 border border-orange-300 text-gray-700 rounded-lg font-medium hover:bg-orange-50 transition-all duration-200 disabled:opacity-50 text-sm sm:text-base"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={modalLoading}
-                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-lg font-medium shadow-lg shadow-orange-500/30 transition-all duration-200 hover:scale-105 disabled:opacity-50 flex items-center justify-center gap-2 text-sm sm:text-base"
-                >
-                  {modalLoading ? (
-                    <>
-                      <Loader size={18} className="sm:w-5 sm:h-5 animate-spin" />
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    editingCategory ? 'Update' : 'Create'
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

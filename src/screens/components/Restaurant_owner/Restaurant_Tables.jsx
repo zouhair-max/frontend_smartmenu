@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { tableService } from '../../../services/tableService';
 import { Plus, Edit, Trash2, QrCode, RefreshCw, X } from 'lucide-react';
 import LoadingSpinner from './components/LoadingSpinner';
 
 const Restaurant_Tables = () => {
+  const navigate = useNavigate();
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [openDialog, setOpenDialog] = useState(false);
   const [openQrDialog, setOpenQrDialog] = useState(false);
-  const [selectedTable, setSelectedTable] = useState(null);
   const [qrCodeUrl, setQrCodeUrl] = useState('');
-  const [formData, setFormData] = useState({
-    name: '',
-    capacity: 4,
-    status: 'available'
-  });
 
   const statusColors = {
     available: 'bg-green-100 text-green-800',
@@ -52,33 +47,6 @@ const Restaurant_Tables = () => {
     }
   };
 
-  const handleCreateTable = async () => {
-    try {
-      const response = await tableService.createTable(formData);
-      if (response.success) {
-        setSuccess('Table created successfully!');
-        setOpenDialog(false);
-        resetForm();
-        fetchTables();
-      }
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const handleUpdateTable = async () => {
-    try {
-      const response = await tableService.updateTable(selectedTable.id, formData);
-      if (response.success) {
-        setSuccess('Table updated successfully!');
-        setOpenDialog(false);
-        resetForm();
-        fetchTables();
-      }
-    } catch (err) {
-      setError(err.message);
-    }
-  };
 
   const handleDeleteTable = async (id) => {
     if (window.confirm('Are you sure you want to delete this table?')) {
@@ -142,41 +110,8 @@ const Restaurant_Tables = () => {
     }
   };
 
-  const openCreateDialog = () => {
-    setSelectedTable(null);
-    setFormData({
-      name: '',
-      capacity: 4,
-      status: 'available'
-    });
-    setOpenDialog(true);
-  };
-
-  const openEditDialog = (table) => {
-    setSelectedTable(table);
-    setFormData({
-      name: table.name,
-      capacity: table.capacity,
-      status: table.status
-    });
-    setOpenDialog(true);
-  };
-
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      capacity: 4,
-      status: 'available'
-    });
-    setSelectedTable(null);
-  };
-
-  const handleSubmit = () => {
-    if (selectedTable) {
-      handleUpdateTable();
-    } else {
-      handleCreateTable();
-    }
+  const handleEdit = (table) => {
+    navigate(`/Restaurant_Tables/${table.id}/edit`);
   };
 
   return (
@@ -185,7 +120,7 @@ const Restaurant_Tables = () => {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-4 sm:mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Restaurant Tables</h1>
         <button
-          onClick={openCreateDialog}
+          onClick={() => navigate('/Restaurant_Tables/create')}
           className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all shadow-md"
         >
           <Plus size={20} />
@@ -254,7 +189,7 @@ const Restaurant_Tables = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => openEditDialog(table)}
+                          onClick={() => handleEdit(table)}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="Edit"
                         >
@@ -287,74 +222,6 @@ const Restaurant_Tables = () => {
                 ))}
               </tbody>
             </table>
-          </div>
-        </div>
-      )}
-
-      {/* Create/Edit Dialog */}
-      {openDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-xl font-semibold text-gray-800">
-                {selectedTable ? 'Edit Table' : 'Create New Table'}
-              </h2>
-              <button
-                onClick={() => setOpenDialog(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Table Name</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Capacity</label>
-                <input
-                  type="number"
-                  value={formData.capacity}
-                  onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) })}
-                  min="1"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                >
-                  <option value="available">Available</option>
-                  <option value="occupied">Occupied</option>
-                  <option value="reserved">Reserved</option>
-                  <option value="maintenance">Maintenance</option>
-                </select>
-              </div>
-            </div>
-            <div className="flex justify-end gap-3 p-6 border-t">
-              <button
-                onClick={() => setOpenDialog(false)}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmit}
-                className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all"
-              >
-                {selectedTable ? 'Update' : 'Create'}
-              </button>
-            </div>
           </div>
         </div>
       )}

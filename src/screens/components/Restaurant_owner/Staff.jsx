@@ -1,27 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import staffService from '../../../services/StaffService';
 import { Search, Plus, Edit2, Trash2, X, Users, Mail, Phone, Shield, Filter, ImageIcon } from 'lucide-react';
 
 
 export default function Staff() {
+  const navigate = useNavigate();
   const [staffList, setStaffList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [editingStaff, setEditingStaff] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
-
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    password_confirmation: '',
-    avatar: '',
-    is_active: true
-  });
 
   // Fetch all staff
   const fetchStaff = async () => {
@@ -70,94 +60,9 @@ export default function Staff() {
     }
   };
 
-  // Handle form input changes
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
-
-  // Reset form
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      password: '',
-      password_confirmation: '',
-      avatar: '',
-      is_active: true
-    });
-    setEditingStaff(null);
-  };
-
-  // Handle form submit
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-
-    try {
-      const submitData = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone?.trim() || '',
-        avatar: formData.avatar?.trim() || '',
-        is_active: formData.is_active,
-      };
-
-      if (formData.password) {
-        submitData.password = formData.password;
-        submitData.password_confirmation = formData.password_confirmation;
-      }
-
-      if (editingStaff) {
-        const response = await staffService.updateStaff(editingStaff.id, submitData);
-        if (response.success) {
-          setSuccess('Staff updated successfully');
-          setShowModal(false);
-          resetForm();
-          fetchStaff();
-        }
-      } else {
-        if (!formData.password) {
-          setError('Password is required for new staff');
-          return;
-        }
-        const response = await staffService.createStaff(submitData);
-        if (response.success) {
-          setSuccess('Staff created successfully');
-          setShowModal(false);
-          resetForm();
-          fetchStaff();
-        }
-      }
-    } catch (err) {
-      if (err.errors) {
-        const errorMessages = Object.values(err.errors).flat().join(', ');
-        setError(errorMessages);
-      } else {
-        setError(err.message || 'Operation failed');
-      }
-      console.error('Submit error:', err);
-    }
-  };
-
   // Handle edit
   const handleEdit = (staff) => {
-    setEditingStaff(staff);
-    setFormData({
-      name: staff.name,
-      email: staff.email,
-      phone: staff.phone || '',
-      password: '',
-      password_confirmation: '',
-      avatar: staff.avatar || '',
-      is_active: staff.is_active
-    });
-    setShowModal(true);
+    navigate(`/Staffs/${staff.id}/edit`);
   };
 
   // Handle delete
@@ -196,10 +101,7 @@ export default function Staff() {
               <p className="text-sm text-gray-500 mt-1">Manage your restaurant team members</p>
             </div>
             <button 
-              onClick={() => {
-                resetForm();
-                setShowModal(true);
-              }}
+              onClick={() => navigate('/Staffs/create')}
               className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm"
             >
               <Plus className="w-4 h-4" />
@@ -329,10 +231,7 @@ export default function Staff() {
                         <Users className="w-12 h-12 text-gray-300" />
                         <p className="text-sm text-gray-500">No staff members found</p>
                         <button
-                          onClick={() => {
-                            resetForm();
-                            setShowModal(true);
-                          }}
+                          onClick={() => navigate('/Staffs/create')}
                           className="mt-2 text-sm text-orange-600 hover:text-orange-700 font-medium"
                         >
                           Add your first staff member
@@ -416,182 +315,6 @@ export default function Staff() {
             </table>
           </div>
         </div>
-
-        {/* Modal */}
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              {/* Modal Header */}
-              <div className="border-b border-gray-200 p-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-gray-900">
-                    {editingStaff ? 'Edit Staff Member' : 'Add New Staff'}
-                  </h2>
-                  <button
-                    onClick={() => {
-                      setShowModal(false);
-                      resetForm();
-                    }}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Modal Body */}
-              <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Name */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
-                      placeholder="Enter full name"
-                    />
-                  </div>
-
-                  {/* Email */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
-                        placeholder="email@example.com"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Phone */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number
-                    </label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
-                        placeholder="+1 (555) 000-0000"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Avatar URL */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Avatar URL
-                    </label>
-                    <div className="relative">
-                      <ImageIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <input
-                        type="url"
-                        name="avatar"
-                        value={formData.avatar}
-                        onChange={handleInputChange}
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
-                        placeholder="https://example.com/avatar.jpg"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Password {!editingStaff && <span className="text-red-500">*</span>}
-                    </label>
-                    <div className="relative">
-                      <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        required={!editingStaff}
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
-                        placeholder={editingStaff ? "Leave blank to keep current" : "Enter password"}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Confirm Password */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Confirm Password {!editingStaff && <span className="text-red-500">*</span>}
-                    </label>
-                    <div className="relative">
-                      <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <input
-                        type="password"
-                        name="password_confirmation"
-                        value={formData.password_confirmation}
-                        onChange={handleInputChange}
-                        required={!editingStaff && formData.password}
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
-                        placeholder="Confirm password"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Active Status */}
-                  <div className="md:col-span-2">
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="is_active"
-                        checked={formData.is_active}
-                        onChange={handleInputChange}
-                        className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
-                      />
-                      <span className="text-sm font-medium text-gray-700">
-                        Active Staff Member
-                      </span>
-                    </label>
-                  </div>
-                </div>
-
-                {/* Modal Footer */}
-                <div className="flex gap-3 mt-8 pt-6 border-t border-gray-200">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowModal(false);
-                      resetForm();
-                    }}
-                    className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    className="flex-1 px-4 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition-colors shadow-sm"
-                  >
-                    {editingStaff ? 'Update Staff' : 'Add Staff'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

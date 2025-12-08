@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+// Get API base URL from environment variables, fallback to default for development
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
 
 class ApiService {
   constructor() {
@@ -24,8 +25,8 @@ class ApiService {
     // Check if data is FormData to handle multipart uploads
     const isFormData = options.body instanceof FormData;
 
-    // Remove params from options as we've already processed them into the URL
-    const { params, ...restOptions } = options;
+    // Remove params and skipAuth from options as we've already processed them
+    const { params, skipAuth, ...restOptions } = options;
     
     const config = {
       headers: {
@@ -44,7 +45,8 @@ class ApiService {
       delete config.headers['Content-Type'];
     }
 
-    if (token) {
+    // Only add Authorization header if token exists and skipAuth is not true
+    if (token && !skipAuth) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
 
@@ -88,6 +90,23 @@ class ApiService {
 
   get(endpoint, options = {}) {
     return this.request(endpoint, options);
+  }
+
+  // Public GET method that skips authentication
+  publicGet(endpoint, options = {}) {
+    return this.request(endpoint, { ...options, skipAuth: true });
+  }
+
+  // Public POST method that skips authentication
+  publicPost(endpoint, data, options = {}) {
+    const isFormData = data instanceof FormData;
+    const requestOptions = {
+      method: 'POST',
+      body: isFormData ? data : JSON.stringify(data),
+      skipAuth: true,
+      ...options,
+    };
+    return this.request(endpoint, requestOptions);
   }
 
   post(endpoint, data, options = {}) {

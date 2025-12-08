@@ -1,23 +1,44 @@
 // App.js
+import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { LoadingProvider } from './contexts/LoadingContext';
+import ProtectedRoute from './screens/components/ProtectedRoute.jsx';
+import RoleProtectedRoute from './screens/components/RoleProtectedRoute.jsx';
+import NavBarLayout from './screens/components/Restaurant_owner/NavBarLayout.jsx';
+import AdminLayout from './screens/components/Admin/AdminLayout.jsx';
+import LoadingFallback from './components/LoadingFallback.jsx';
+
+// Public routes - loaded immediately
 import Home from './auth/Home';
 import Login from './auth/Login.jsx';
 import SignUp from './auth/Singup.jsx';
 import ForgetPassword from './auth/ForgetPassword.jsx';
-import HomeScreen from './screens/HomeScreen.jsx';
-import ProtectedRoute from './screens/components/ProtectedRoute.jsx';
-import RoleProtectedRoute from './screens/components/RoleProtectedRoute.jsx';
-import MealsList from './screens/components/Restaurant_owner/Meals/MealsList.jsx';
-import MealForm from './screens/components/Restaurant_owner/Meals/MealForm.jsx';
-import NavBarLayout from './screens/components/Restaurant_owner/NavBarLayout.jsx';
-import Dashboard from './screens/components/Restaurant_owner/Dashboard.jsx';
-import Categories from './screens/components/Restaurant_owner/Categories.jsx';
-import Order from './screens/components/Restaurant_owner/Order.jsx';
-import Staff from './screens/components/Restaurant_owner/Staff.jsx';
-import Restaurant_Tables from './screens/components/Restaurant_owner/Restaurant_Tables.jsx';
-import Setting from './screens/components/Restaurant_owner/Setting.jsx';
+import ResetPassword from './auth/ResetPassword.jsx';
+
+// Lazy load heavy components for better performance
+const PageMenu = lazy(() => import('./screens/components/PageMenu.jsx'));
+const Dashboard = lazy(() => import('./screens/components/Restaurant_owner/Dashboard.jsx'));
+const MealsList = lazy(() => import('./screens/components/Restaurant_owner/Meals/MealsList.jsx'));
+const MealForm = lazy(() => import('./screens/components/Restaurant_owner/Meals/MealForm.jsx'));
+const Categories = lazy(() => import('./screens/components/Restaurant_owner/Categories.jsx'));
+const CategoryForm = lazy(() => import('./screens/components/Restaurant_owner/Categories/CategoryForm.jsx'));
+const Order = lazy(() => import('./screens/components/Restaurant_owner/Order.jsx'));
+const OrderForm = lazy(() => import('./screens/components/Restaurant_owner/Orders/OrderForm.jsx'));
+const Staff = lazy(() => import('./screens/components/Restaurant_owner/Staff.jsx'));
+const StaffForm = lazy(() => import('./screens/components/Restaurant_owner/Staff/StaffForm.jsx'));
+const Restaurant_Tables = lazy(() => import('./screens/components/Restaurant_owner/Restaurant_Tables.jsx'));
+const TableForm = lazy(() => import('./screens/components/Restaurant_owner/Tables/TableForm.jsx'));
+const Setting = lazy(() => import('./screens/components/Restaurant_owner/Setting.jsx'));
+
+// Admin components
+const AdminDashboard = lazy(() => import('./screens/components/Admin/AdminDashboard.jsx'));
+const RestaurantsList = lazy(() => import('./screens/components/Admin/Restaurants/RestaurantsList.jsx'));
+const RestaurantForm = lazy(() => import('./screens/components/Admin/Restaurants/RestaurantForm.jsx'));
+const RestaurantDetails = lazy(() => import('./screens/components/Admin/Restaurants/RestaurantDetails.jsx'));
+const UsersList = lazy(() => import('./screens/components/Admin/Users/UsersList.jsx'));
+const UserForm = lazy(() => import('./screens/components/Admin/Users/UserForm.jsx'));
+const UserDetails = lazy(() => import('./screens/components/Admin/Users/UserDetails.jsx'));
 
 export default function App() {
   return (
@@ -26,20 +47,33 @@ export default function App() {
         <Router>
           <Routes>
             {/* Public Routes without NavBarLayout */}
-            <Route path="/" element={<Home />} />
+            <Route 
+              path="/Pagemenu/:restaurant_id/:table_id" 
+              element={
+                <Suspense fallback={<LoadingFallback message="Loading menu..." />}>
+                  <PageMenu />
+                </Suspense>
+              } 
+            />
+
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/login/ForegetPassword" element={<ForgetPassword />} />
+            <Route path="/forgot-password" element={<ForgetPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/" element={<Home />} />
+            
             
             {/* Protected Routes with NavBarLayout */}
             <Route 
               path="/dashboard" 
               element={
-                <ProtectedRoute allowedRoles={['restaurant_owner']}>
+                <RoleProtectedRoute allowedRoles={['restaurant_owner']}>
                   <NavBarLayout>
-                    <Dashboard />
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Dashboard />
+                    </Suspense>
                   </NavBarLayout>
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             {/* Meal Management Routes - Restaurant Owner Only */}
@@ -48,7 +82,9 @@ export default function App() {
               element={
                 <RoleProtectedRoute >
                   <NavBarLayout>
-                    <MealsList />
+                    <Suspense fallback={<LoadingFallback />}>
+                      <MealsList />
+                    </Suspense>
                   </NavBarLayout>
                 </RoleProtectedRoute>
               } 
@@ -58,7 +94,33 @@ export default function App() {
               element={
                 <RoleProtectedRoute >
                   <NavBarLayout>
-                    <Categories />
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Categories />
+                    </Suspense>
+                  </NavBarLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/categories/create" 
+              element={
+                <RoleProtectedRoute >
+                  <NavBarLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <CategoryForm />
+                    </Suspense>
+                  </NavBarLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/categories/:id/edit" 
+              element={
+                <RoleProtectedRoute >
+                  <NavBarLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <CategoryForm />
+                    </Suspense>
                   </NavBarLayout>
                 </RoleProtectedRoute>
               } 
@@ -68,7 +130,9 @@ export default function App() {
               element={
                 <RoleProtectedRoute >
                   <NavBarLayout>
-                    <MealForm />
+                    <Suspense fallback={<LoadingFallback />}>
+                      <MealForm />
+                    </Suspense>
                   </NavBarLayout>
                 </RoleProtectedRoute>
               } 
@@ -78,7 +142,9 @@ export default function App() {
               element={
                 <RoleProtectedRoute >
                   <NavBarLayout>
-                    <MealForm />
+                    <Suspense fallback={<LoadingFallback />}>
+                      <MealForm />
+                    </Suspense>
                   </NavBarLayout>
                 </RoleProtectedRoute>
               } 
@@ -88,9 +154,23 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <NavBarLayout>
-                    <Order />
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Order />
+                    </Suspense>
                   </NavBarLayout>
                 </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/orders/create" 
+              element={
+                <RoleProtectedRoute>
+                  <NavBarLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <OrderForm />
+                    </Suspense>
+                  </NavBarLayout>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
@@ -98,7 +178,33 @@ export default function App() {
               element={
                 <RoleProtectedRoute allowedRoles={['restaurant_owner']}>
                   <NavBarLayout>
-                    <Staff />
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Staff />
+                    </Suspense>
+                  </NavBarLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/Staffs/create" 
+              element={
+                <RoleProtectedRoute allowedRoles={['restaurant_owner']}>
+                  <NavBarLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <StaffForm />
+                    </Suspense>
+                  </NavBarLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/Staffs/:id/edit" 
+              element={
+                <RoleProtectedRoute allowedRoles={['restaurant_owner']}>
+                  <NavBarLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <StaffForm />
+                    </Suspense>
                   </NavBarLayout>
                 </RoleProtectedRoute>
               } 
@@ -108,7 +214,33 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <NavBarLayout>
-                    <Restaurant_Tables />
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Restaurant_Tables />
+                    </Suspense>
+                  </NavBarLayout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/Restaurant_Tables/create" 
+              element={
+                <ProtectedRoute>
+                  <NavBarLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <TableForm />
+                    </Suspense>
+                  </NavBarLayout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/Restaurant_Tables/:id/edit" 
+              element={
+                <ProtectedRoute>
+                  <NavBarLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <TableForm />
+                    </Suspense>
                   </NavBarLayout>
                 </ProtectedRoute>
               } 
@@ -118,8 +250,120 @@ export default function App() {
               element={
                 <RoleProtectedRoute allowedRoles={['restaurant_owner']}>
                   <NavBarLayout>
-                    <Setting />
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Setting />
+                    </Suspense>
                   </NavBarLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+
+            {/* Admin Routes */}
+            <Route 
+              path="/admin/dashboard" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminDashboard />
+                    </Suspense>
+                  </AdminLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/restaurants" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <RestaurantsList />
+                    </Suspense>
+                  </AdminLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/restaurants/create" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <RestaurantForm />
+                    </Suspense>
+                  </AdminLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/restaurants/:id" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <RestaurantDetails />
+                    </Suspense>
+                  </AdminLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/restaurants/:id/edit" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <RestaurantForm />
+                    </Suspense>
+                  </AdminLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/users" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <UsersList />
+                    </Suspense>
+                  </AdminLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/users/create" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <UserForm />
+                    </Suspense>
+                  </AdminLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/users/:id" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <UserDetails />
+                    </Suspense>
+                  </AdminLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/users/:id/edit" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <UserForm />
+                    </Suspense>
+                  </AdminLayout>
                 </RoleProtectedRoute>
               } 
             />

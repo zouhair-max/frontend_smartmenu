@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, ArrowLeft, Utensils, AlertCircle, CheckCircle } from 'lucide-react';
+import { api } from '../services/api';
+import { API_ENDPOINTS } from '../constants';
 
 export default function ForgetPassword() {
   const [email, setEmail] = useState('');
@@ -12,7 +14,7 @@ export default function ForgetPassword() {
     return emailRegex.test(email);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError('');
 
     if (!email.trim()) {
@@ -27,28 +29,32 @@ export default function ForgetPassword() {
 
     setIsLoading(true);
 
-    // Simulate API call - Replace with your actual API endpoint
-    setTimeout(() => {
+    try {
+      const response = await api.publicPost(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, {
+        email: email.toLowerCase().trim()
+      });
+
+      if (response.success) {
+        setEmailSent(true);
+      } else {
+        setError(response.message || 'Unable to send reset email. Please try again.');
+      }
+    } catch (error) {
+      console.error('Password reset request error:', error);
+      
+      // Handle validation errors (422)
+      if (error.errors && error.errors.email) {
+        const emailError = Array.isArray(error.errors.email) 
+          ? error.errors.email[0] 
+          : error.errors.email;
+        setError(emailError);
+      } else {
+        // Handle other errors
+        setError(error.message || 'Unable to send reset email. Please try again.');
+      }
+    } finally {
       setIsLoading(false);
-      setEmailSent(true);
-      
-      // TODO: Integrate with your backend
-      // Example:
-      // fetch('YOUR_API_URL/forgot-password', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email })
-      // })
-      // .then(res => res.json())
-      // .then(data => {
-      //   setEmailSent(true);
-      // })
-      // .catch(err => {
-      //   setError('Unable to send reset email. Please try again.');
-      // })
-      
-      console.log('Password reset email sent to:', email);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -148,6 +154,7 @@ export default function ForgetPassword() {
                     error ? 'border-red-300' : 'border-gray-300'
                   } rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all`}
                   placeholder="you@restaurant.com"
+                  disabled={isLoading}
                   autoFocus
                 />
               </div>

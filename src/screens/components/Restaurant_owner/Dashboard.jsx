@@ -85,7 +85,7 @@ const Dashboard = () => {
           />
           <StatCard
             title="Earnings Today"
-            value={`€${dashboardData.earnings_today.toFixed(2)}`}
+            value={`${dashboardData.earnings_today.toFixed(2)} MAD`}
             icon="💰"
             color="green"
           />
@@ -133,13 +133,13 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Total Earnings</h3>
             <p className="text-2xl sm:text-3xl font-bold text-green-600">
-              €{(dashboardData.summary_stats?.total_earnings || 0).toFixed(2)}
+              {(dashboardData.summary_stats?.total_earnings || 0).toFixed(2)} MAD
             </p>
           </div>
           <div className="bg-white rounded-lg shadow p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Avg Order Value</h3>
             <p className="text-2xl sm:text-3xl font-bold text-purple-600">
-              €{(dashboardData.summary_stats?.average_order_value || 0).toFixed(2)}
+              {(dashboardData.summary_stats?.average_order_value || 0).toFixed(2)} MAD
             </p>
           </div>
         </div>

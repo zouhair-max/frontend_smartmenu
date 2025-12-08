@@ -29,10 +29,10 @@ const OrdersChart = ({ data = [] }) => {
               <div 
                 className="w-full bg-green-200 rounded-t mb-1 relative group cursor-pointer"
                 style={{ height: `${(day.revenue / maxRevenue) * 70}%` }}
-                title={`Revenue: €${day.revenue.toFixed(2)}`}
+                title={`Revenue: ${day.revenue.toFixed(2)} MAD`}
               >
                 <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                  €{day.revenue.toFixed(2)}
+                  {day.revenue.toFixed(2)} MAD
                 </div>
               </div>
               

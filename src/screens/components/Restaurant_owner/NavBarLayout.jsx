@@ -17,7 +17,8 @@ import {
   ChevronRight,
   Loader2,
   ChartColumnStacked,
-  Home
+  Home,
+  CreditCard
 } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLoading } from '../../../contexts/LoadingContext';
@@ -89,6 +90,15 @@ const NAVIGATION_ITEMS = [
     icon: Users,
     badge: null,
     description: 'Staffs Database',
+    allowedRoles: ['restaurant_owner']
+  },
+  { 
+    id: 'subscription',
+    name: 'Subscription', 
+    path: '/subscription', 
+    icon: CreditCard,
+    badge: null,
+    description: 'Manage Subscription',
     allowedRoles: ['restaurant_owner']
   },
 

@@ -57,6 +57,10 @@ export const API_ENDPOINTS = {
   PAGE_MENU: {
     GET: '/page-menu',
   },
+  SUBSCRIPTION: {
+    CHECKOUT: '/checkout',
+    GET_SUBSCRIPTION: '/me/subscription',
+  },
 };
 
 // User Roles
@@ -97,6 +101,9 @@ export const ROUTES = {
   TABLES_EDIT: '/Restaurant_Tables/:id/edit',
   SETTINGS: '/settings',
   PAGE_MENU: '/Pagemenu/:restaurant_id/:table_id',
+  SUBSCRIPTION: '/subscription',
+  SUBSCRIPTION_SUCCESS: '/subscription/success',
+  SUBSCRIPTION_CANCEL: '/subscription/cancel',
 };
 
 // Validation Rules

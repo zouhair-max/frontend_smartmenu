@@ -15,6 +15,7 @@ import Login from './auth/Login.jsx';
 import SignUp from './auth/Singup.jsx';
 import ForgetPassword from './auth/ForgetPassword.jsx';
 import ResetPassword from './auth/ResetPassword.jsx';
+import NotFound from './components/NotFound.jsx';
 
 // Lazy load heavy components for better performance
 const PageMenu = lazy(() => import('./screens/components/PageMenu.jsx'));
@@ -30,6 +31,9 @@ const StaffForm = lazy(() => import('./screens/components/Restaurant_owner/Staff
 const Restaurant_Tables = lazy(() => import('./screens/components/Restaurant_owner/Restaurant_Tables.jsx'));
 const TableForm = lazy(() => import('./screens/components/Restaurant_owner/Tables/TableForm.jsx'));
 const Setting = lazy(() => import('./screens/components/Restaurant_owner/Setting.jsx'));
+const Subscription = lazy(() => import('./screens/components/Restaurant_owner/Subscription.jsx'));
+const SubscriptionSuccess = lazy(() => import('./screens/components/Restaurant_owner/SubscriptionSuccess.jsx'));
+const SubscriptionCancel = lazy(() => import('./screens/components/Restaurant_owner/SubscriptionCancel.jsx'));
 
 // Admin components
 const AdminDashboard = lazy(() => import('./screens/components/Admin/AdminDashboard.jsx'));
@@ -257,6 +261,42 @@ export default function App() {
                 </RoleProtectedRoute>
               } 
             />
+            <Route 
+              path="/subscription" 
+              element={
+                <RoleProtectedRoute allowedRoles={['restaurant_owner']}>
+                  <NavBarLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Subscription />
+                    </Suspense>
+                  </NavBarLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/subscription/success" 
+              element={
+                <RoleProtectedRoute allowedRoles={['restaurant_owner']}>
+                  <NavBarLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <SubscriptionSuccess />
+                    </Suspense>
+                  </NavBarLayout>
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/subscription/cancel" 
+              element={
+                <RoleProtectedRoute allowedRoles={['restaurant_owner']}>
+                  <NavBarLayout>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <SubscriptionCancel />
+                    </Suspense>
+                  </NavBarLayout>
+                </RoleProtectedRoute>
+              } 
+            />
 
             {/* Admin Routes */}
             <Route 
@@ -367,6 +407,9 @@ export default function App() {
                 </RoleProtectedRoute>
               } 
             />
+
+            {/* 404 - Catch all route (must be last) */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
       </AuthProvider>

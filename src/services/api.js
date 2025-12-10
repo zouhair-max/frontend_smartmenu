@@ -1,5 +1,9 @@
 // Get API base URL from environment variables, fallback to default for development
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
+// REACT_APP_API_URL should be the base URL (e.g., https://backend-endsmartmenu-production.up.railway.app)
+// The /api path will be appended automatically
+const API_BASE_URL = process.env.REACT_APP_API_URL 
+  ? `${process.env.REACT_APP_API_URL}/api` 
+  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api');
 
 class ApiService {
   constructor() {

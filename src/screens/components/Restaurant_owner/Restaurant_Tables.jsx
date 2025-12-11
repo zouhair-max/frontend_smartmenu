@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { tableService } from '../../../services/tableService';
-import { Plus, Edit, Trash2, QrCode, RefreshCw, X } from 'lucide-react';
+import { Plus, Edit, Trash2, QrCode, RefreshCw, X, Printer } from 'lucide-react';
 import LoadingSpinner from './components/LoadingSpinner';
 
 // Get base URL for storage files (without /api)
@@ -158,6 +158,88 @@ const Restaurant_Tables = () => {
 
   const handleEdit = (table) => {
     navigate(`/Restaurant_Tables/${table.id}/edit`);
+  };
+
+  const handlePrintQrCode = () => {
+    if (!qrCodeUrl) return;
+    
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow popups to print the QR code');
+      return;
+    }
+    
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>QR Code - Print</title>
+          <style>
+            @media print {
+              body { margin: 0; padding: 20px; }
+              .qr-container { 
+                display: flex; 
+                flex-direction: column; 
+                align-items: center; 
+                justify-content: center;
+                page-break-inside: avoid;
+              }
+              .qr-image { 
+                max-width: 100%; 
+                height: auto; 
+                border: 2px solid #000;
+                border-radius: 8px;
+              }
+              .qr-text {
+                margin-top: 20px;
+                font-size: 18px;
+                font-weight: bold;
+                text-align: center;
+              }
+            }
+            body {
+              margin: 0;
+              padding: 20px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              min-height: 100vh;
+            }
+            .qr-container {
+              text-align: center;
+            }
+            .qr-image {
+              max-width: 400px;
+              height: auto;
+              border: 2px solid #000;
+              border-radius: 8px;
+            }
+            .qr-text {
+              margin-top: 20px;
+              font-size: 18px;
+              font-weight: bold;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="qr-container">
+            <img src="${qrCodeUrl}" alt="QR Code" class="qr-image" />
+            <p class="qr-text">Scan this QR code to access the table</p>
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+              window.onafterprint = function() {
+                window.close();
+              };
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   return (
@@ -321,6 +403,14 @@ const Restaurant_Tables = () => {
                 className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 Close
+              </button>
+              <button
+                onClick={handlePrintQrCode}
+                disabled={!qrCodeUrl}
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                <Printer size={18} />
+                Print
               </button>
               <button
                 onClick={() => {

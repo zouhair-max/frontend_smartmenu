@@ -4,9 +4,24 @@ import { Save, X, Upload, Menu, Globe, ListOrdered, Image, Utensils } from 'luci
 import CategoryApi from '../../../../services/categoryApi';
 
 // Get base URL for storage files (without /api)
-const STORAGE_BASE_URL = process.env.REACT_APP_API_URL 
-  ? process.env.REACT_APP_API_URL 
-  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000');
+// Use the same base URL as API service but without /api suffix
+// If REACT_APP_API_URL is not set, try to detect from window location or use production URL
+const getStorageBaseUrl = () => {
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  if (process.env.REACT_APP_API_BASE_URL) {
+    return process.env.REACT_APP_API_BASE_URL;
+  }
+  // If in production (not localhost), use production URL
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return 'https://backend-endsmartmenu-production.up.railway.app';
+  }
+  // Default to localhost for development
+  return 'http://localhost:8000';
+};
+
+const STORAGE_BASE_URL = getStorageBaseUrl();
 
 // Enhanced Loading Spinner with Category Theme
 const LoadingSpinner = () => {

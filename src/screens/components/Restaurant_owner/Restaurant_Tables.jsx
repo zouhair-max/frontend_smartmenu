@@ -5,9 +5,24 @@ import { Plus, Edit, Trash2, QrCode, RefreshCw, X } from 'lucide-react';
 import LoadingSpinner from './components/LoadingSpinner';
 
 // Get base URL for storage files (without /api)
-const STORAGE_BASE_URL = process.env.REACT_APP_API_URL 
-  ? process.env.REACT_APP_API_URL 
-  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000');
+// Use the same base URL as API service but without /api suffix
+// If REACT_APP_API_URL is not set, try to detect from window location or use production URL
+const getStorageBaseUrl = () => {
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  if (process.env.REACT_APP_API_BASE_URL) {
+    return process.env.REACT_APP_API_BASE_URL;
+  }
+  // If in production (not localhost), use production URL
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return 'https://backend-endsmartmenu-production.up.railway.app';
+  }
+  // Default to localhost for development
+  return 'http://localhost:8000';
+};
+
+const STORAGE_BASE_URL = getStorageBaseUrl();
 
 const Restaurant_Tables = () => {
   const navigate = useNavigate();
@@ -98,16 +113,33 @@ const Restaurant_Tables = () => {
           }
           // If it's a full URL, replace the base URL with STORAGE_BASE_URL
           else {
-            try {
-              const urlObj = new URL(url);
-              // Extract just the pathname (e.g., /storage/qrcodes/table_1_1765415787.svg)
-              url = `${STORAGE_BASE_URL}${urlObj.pathname}`;
-            } catch (e) {
-              // If URL parsing fails, try simple string replacement for common patterns
-              url = url
-                .replace(/^https?:\/\/localhost(\/|$)/, `${STORAGE_BASE_URL}/`)
-                .replace(/^https?:\/\/127\.0\.0\.1:8000(\/|$)/, `${STORAGE_BASE_URL}/`)
-                .replace(/^https?:\/\/[^\/]+/, STORAGE_BASE_URL);
+            // Check if URL contains localhost or 127.0.0.1 - always replace these
+            if (url.includes('localhost') || url.includes('127.0.0.1')) {
+              try {
+                const urlObj = new URL(url);
+                // Extract just the pathname (e.g., /storage/qrcodes/table_1_1765415787.svg)
+                url = `${STORAGE_BASE_URL}${urlObj.pathname}`;
+              } catch (e) {
+                // If URL parsing fails, try simple string replacement for common patterns
+                url = url
+                  .replace(/^https?:\/\/localhost(:[0-9]+)?(\/|$)/, `${STORAGE_BASE_URL}/`)
+                  .replace(/^https?:\/\/127\.0\.0\.1(:[0-9]+)?(\/|$)/, `${STORAGE_BASE_URL}/`)
+                  .replace(/^https?:\/\/[^\/]+/, STORAGE_BASE_URL);
+              }
+            } else {
+              // For other URLs, check if they match the current STORAGE_BASE_URL
+              // If not, extract pathname and use STORAGE_BASE_URL
+              try {
+                const urlObj = new URL(url);
+                const currentBase = urlObj.origin;
+                // If the URL's origin doesn't match STORAGE_BASE_URL, replace it
+                if (currentBase !== STORAGE_BASE_URL && !STORAGE_BASE_URL.includes(currentBase)) {
+                  url = `${STORAGE_BASE_URL}${urlObj.pathname}`;
+                }
+              } catch (e) {
+                // If URL parsing fails, try simple string replacement
+                url = url.replace(/^https?:\/\/[^\/]+/, STORAGE_BASE_URL);
+              }
             }
           }
         }

@@ -16,19 +16,13 @@ class CategoryApi {
   // CREATE category
   async createCategory(formData) {
     try {
-      // Validate required fields - check if at least one translation exists
-      const nameEn = formData.get('name[en]');
-      const nameAr = formData.get('name[ar]');
-      const nameFr = formData.get('name[fr]');
+      // Validate that name field exists (required by backend)
+      const name = formData.get('name');
       
-      const hasName = (nameEn && nameEn.toString().trim()) || 
-                     (nameAr && nameAr.toString().trim()) || 
-                     (nameFr && nameFr.toString().trim());
-      
-      if (!hasName) {
+      if (!name || !name.toString().trim()) {
         throw { 
-          message: 'Name field is required in at least one language',
-          errors: { name: ['The name field is required in at least one language.'] },
+          message: 'Name field is required',
+          errors: { name: ['The name field is required.'] },
           success: false
         };
       }
@@ -43,19 +37,13 @@ class CategoryApi {
   // UPDATE category
   async updateCategory(id, formData) {
     try {
-      // Validate required fields - check if at least one translation exists
-      const nameEn = formData.get('name[en]');
-      const nameAr = formData.get('name[ar]');
-      const nameFr = formData.get('name[fr]');
+      // Validate that name field exists (required by backend)
+      const name = formData.get('name');
       
-      const hasName = (nameEn && nameEn.toString().trim()) || 
-                     (nameAr && nameAr.toString().trim()) || 
-                     (nameFr && nameFr.toString().trim());
-      
-      if (!hasName) {
+      if (!name || !name.toString().trim()) {
         throw { 
-          message: 'Name field is required in at least one language',
-          errors: { name: ['The name field is required in at least one language.'] },
+          message: 'Name field is required',
+          errors: { name: ['The name field is required.'] },
           success: false
         };
       }

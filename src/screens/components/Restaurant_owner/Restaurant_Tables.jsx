@@ -96,21 +96,31 @@ const Restaurant_Tables = () => {
             const cleanPath = url.startsWith('/') ? url.substring(1) : url;
             url = `${STORAGE_BASE_URL}/${cleanPath}`;
           }
-          // If it's a full URL with localhost or 127.0.0.1, replace with STORAGE_BASE_URL
-          else if (url.includes('localhost') || url.includes('127.0.0.1')) {
-            // Extract the path from the URL
-            const urlObj = new URL(url);
-            url = `${STORAGE_BASE_URL}${urlObj.pathname}`;
+          // If it's a full URL, replace the base URL with STORAGE_BASE_URL
+          else {
+            try {
+              const urlObj = new URL(url);
+              // Extract just the pathname (e.g., /storage/qrcodes/table_1_1765415787.svg)
+              url = `${STORAGE_BASE_URL}${urlObj.pathname}`;
+            } catch (e) {
+              // If URL parsing fails, try simple string replacement for common patterns
+              url = url
+                .replace(/^https?:\/\/localhost(\/|$)/, `${STORAGE_BASE_URL}/`)
+                .replace(/^https?:\/\/127\.0\.0\.1:8000(\/|$)/, `${STORAGE_BASE_URL}/`)
+                .replace(/^https?:\/\/[^\/]+/, STORAGE_BASE_URL);
+            }
           }
         }
         
         console.log('Final QR code URL:', url);
         setQrCodeUrl(url);
         setOpenQrDialog(true);
+      } else {
+        setError(response.message || 'Failed to get QR code');
       }
     } catch (err) {
       console.error('Error fetching QR code:', err);
-      setError(err.message);
+      setError(err.message || 'Failed to load QR code');
     }
   };
 

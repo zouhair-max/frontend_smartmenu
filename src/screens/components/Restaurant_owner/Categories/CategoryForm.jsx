@@ -153,12 +153,47 @@ const CategoryForm = () => {
 
       const submitData = new FormData();
       
-      // Append translations
-      Object.keys(formData.name).forEach(locale => {
-        submitData.append(`name[${locale}]`, formData.name[locale].trim());
-      });
+      // Get the first available name (English preferred, then Arabic, then French)
+      const nameEn = formData.name.en.trim();
+      const nameAr = formData.name.ar.trim();
+      const nameFr = formData.name.fr.trim();
       
+      const defaultName = nameEn || nameAr || nameFr;
+      if (!defaultName) {
+        alert('Category name is required in at least one language');
+        setLoading(false);
+        return;
+      }
+      
+      // Use English as default name, or first available if English is empty
+      const nameValue = nameEn || defaultName;
+      submitData.append('name', nameValue);
       submitData.append('order', formData.order.toString());
+      
+      // Build translations array for other languages
+      const translations = [];
+      
+      // Add Arabic if it exists and is different from default
+      if (nameAr && nameAr !== nameValue) {
+        translations.push({ locale: 'ar', name: nameAr });
+      }
+      
+      // Add French if it exists and is different from default
+      if (nameFr && nameFr !== nameValue) {
+        translations.push({ locale: 'fr', name: nameFr });
+      }
+      
+      // Add English to translations only if it exists but wasn't used as default
+      // (i.e., if default was Arabic or French because English was empty)
+      if (nameEn && nameEn !== nameValue) {
+        translations.push({ locale: 'en', name: nameEn });
+      }
+      
+      // Append translations array to FormData
+      translations.forEach((trans, index) => {
+        submitData.append(`translations[${index}][locale]`, trans.locale);
+        submitData.append(`translations[${index}][name]`, trans.name);
+      });
       
       if (formData.image) {
         submitData.append('image', formData.image);

@@ -6,9 +6,24 @@ import categoriesService from '../../../../services/categoryApi';
 import CustomSelect from '../components/CustomSelect';
 
 // Get base URL for storage files (without /api)
-const STORAGE_BASE_URL = process.env.REACT_APP_API_URL 
-  ? process.env.REACT_APP_API_URL 
-  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000');
+// Use the same base URL as API service but without /api suffix
+// If REACT_APP_API_URL is not set, try to detect from window location or use production URL
+const getStorageBaseUrl = () => {
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  if (process.env.REACT_APP_API_BASE_URL) {
+    return process.env.REACT_APP_API_BASE_URL;
+  }
+  // If in production (not localhost), use production URL
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return 'https://backend-endsmartmenu-production.up.railway.app';
+  }
+  // Default to localhost for development
+  return 'http://localhost:8000';
+};
+
+const STORAGE_BASE_URL = getStorageBaseUrl();
 
 // Enhanced Loading Spinner with Food Theme
 const LoadingSpinner = () => {
@@ -121,8 +136,7 @@ const MealForm = () => {
       });
 
       if (meal.image) {
-setImagePreview(meal.image);
-        console.log('Meal image path:', imagePreview);
+        setImagePreview(meal.image);
       }
     } catch (error) {
       console.error('Error fetching meal:', error);
@@ -325,9 +339,15 @@ setImagePreview(meal.image);
                           <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">Image Preview:</p>
                           <div className="relative inline-block">
                             <img
-                              src={`${STORAGE_BASE_URL}/storage/${imagePreview}`}
+                              src={imagePreview.startsWith('blob:') 
+                                ? imagePreview 
+                                : `${STORAGE_BASE_URL}/storage/${imagePreview}`}
                               alt="Preview"
                               className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 object-cover rounded-lg sm:rounded-xl shadow-md border-2 border-white"
+                              onError={(e) => {
+                                console.error('Failed to load image:', imagePreview);
+                                e.target.style.display = 'none';
+                              }}
                             />
                             <div className="absolute inset-0 border-2 border-orange-200 rounded-lg sm:rounded-xl pointer-events-none"></div>
                           </div>

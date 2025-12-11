@@ -292,7 +292,7 @@ const MealCard = ({ meal, onToggleAvailability, onDelete }) => {
         </div>
         
         <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <span className="text-xl sm:text-2xl font-bold text-orange-600">${meal.price}</span>
+          <span className="text-xl sm:text-2xl font-bold text-orange-600">{meal.price} MAD</span>
           {meal.order !== undefined && (
             <span className="text-xs sm:text-sm text-gray-500 bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
               Order: {meal.order}

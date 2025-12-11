@@ -275,7 +275,25 @@ const MealsList = () => {
 const MealCard = ({ meal, onToggleAvailability, onDelete }) => {
   const mealName = meal.translations?.find(t => t.locale === 'en')?.name || meal.translations?.[0]?.name || meal.name;
   const categoryName = meal.category?.name || meal.category?.translations?.[0]?.name || 'Uncategorized';
-  const imageUrl = meal.image ? `${STORAGE_BASE_URL}/storage/${meal.image}` : '/images/placeholder-food.jpg';
+  
+  // Build image URL - handle both paths with and without 'storage/' prefix
+  const getImageUrl = () => {
+    if (!meal.image) return '/images/placeholder-food.jpg';
+    
+    let imagePath = meal.image;
+    // Remove leading slash if present
+    if (imagePath.startsWith('/')) {
+      imagePath = imagePath.substring(1);
+    }
+    // If path already includes 'storage/', don't add it again
+    if (imagePath.startsWith('storage/')) {
+      return `${STORAGE_BASE_URL}/${imagePath}`;
+    }
+    // Otherwise, add 'storage/' prefix
+    return `${STORAGE_BASE_URL}/storage/${imagePath}`;
+  };
+  
+  const imageUrl = getImageUrl();
   
   return (
     <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
@@ -284,6 +302,20 @@ const MealCard = ({ meal, onToggleAvailability, onDelete }) => {
           src={imageUrl}
           alt={mealName}
           className="w-full h-40 sm:h-48 object-cover"
+          onError={(e) => {
+            console.error('Failed to load meal image:', {
+              mealId: meal.id,
+              mealName: mealName,
+              imagePath: meal.image,
+              fullUrl: imageUrl,
+              storageBaseUrl: STORAGE_BASE_URL
+            });
+            // Fallback to placeholder
+            e.target.src = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400';
+          }}
+          onLoad={() => {
+            console.log('Meal image loaded successfully:', imageUrl);
+          }}
         />
         <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
           <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-semibold ${
@@ -354,7 +386,25 @@ const MealRow = ({ meal, onToggleAvailability, onDelete }) => {
   const mealName = meal.translations?.find(t => t.locale === 'en')?.name || meal.translations?.[0]?.name || meal.name;
   const mealDescription = meal.translations?.find(t => t.locale === 'en')?.description || meal.translations?.[0]?.description || '';
   const categoryName = meal.category?.name || meal.category?.translations?.[0]?.name || 'Uncategorized';
-  const imageUrl = meal.image ? `${STORAGE_BASE_URL}/storage/${meal.image}` : '/images/placeholder-food.jpg';
+  
+  // Build image URL - handle both paths with and without 'storage/' prefix
+  const getImageUrl = () => {
+    if (!meal.image) return '/images/placeholder-food.jpg';
+    
+    let imagePath = meal.image;
+    // Remove leading slash if present
+    if (imagePath.startsWith('/')) {
+      imagePath = imagePath.substring(1);
+    }
+    // If path already includes 'storage/', don't add it again
+    if (imagePath.startsWith('storage/')) {
+      return `${STORAGE_BASE_URL}/${imagePath}`;
+    }
+    // Otherwise, add 'storage/' prefix
+    return `${STORAGE_BASE_URL}/storage/${imagePath}`;
+  };
+  
+  const imageUrl = getImageUrl();
   
   return (
     <tr className="hover:bg-gray-50 transition-colors duration-200">
@@ -364,6 +414,17 @@ const MealRow = ({ meal, onToggleAvailability, onDelete }) => {
             src={imageUrl}
             alt={mealName}
             className="w-10 h-10 sm:w-14 sm:h-14 object-cover rounded-lg sm:rounded-xl shadow-sm"
+            onError={(e) => {
+              console.error('Failed to load meal image in list view:', {
+                mealId: meal.id,
+                mealName: mealName,
+                imagePath: meal.image,
+                fullUrl: imageUrl,
+                storageBaseUrl: STORAGE_BASE_URL
+              });
+              // Fallback to placeholder
+              e.target.src = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400';
+            }}
           />
           <div className="ml-2 sm:ml-4 min-w-0 flex-1">
             <div className="font-semibold text-gray-800 text-sm sm:text-base truncate">{mealName}</div>

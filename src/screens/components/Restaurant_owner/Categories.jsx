@@ -24,6 +24,23 @@ const getStorageBaseUrl = () => {
 
 const STORAGE_BASE_URL = getStorageBaseUrl();
 
+// Helper function to build image URL
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return null;
+  
+  let path = imagePath;
+  // Remove leading slash if present
+  if (path.startsWith('/')) {
+    path = path.substring(1);
+  }
+  // If path already includes 'storage/', don't add it again
+  if (path.startsWith('storage/')) {
+    return `${STORAGE_BASE_URL}/${path}`;
+  }
+  // Otherwise, add 'storage/' prefix
+  return `${STORAGE_BASE_URL}/storage/${path}`;
+};
+
 export default function Categories() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
@@ -269,10 +286,20 @@ export default function Categories() {
                 <div className="relative h-36 sm:h-48 bg-gradient-to-br from-orange-50 to-amber-50 overflow-hidden">
                   {category.image ? (
                     <img
-                      src={`${STORAGE_BASE_URL}/storage/${category.image}`}
+                      src={getImageUrl(category.image)}
                       alt={getCategoryName(category, 'en') || category.name}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
+                      onError={(e) => {
+                        console.error('Failed to load category image:', {
+                          categoryId: category.id,
+                          categoryName: getCategoryName(category, 'en'),
+                          imagePath: category.image,
+                          fullUrl: getImageUrl(category.image),
+                          storageBaseUrl: STORAGE_BASE_URL
+                        });
+                        e.target.style.display = 'none';
+                      }}
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full">
@@ -322,10 +349,20 @@ export default function Categories() {
                 <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center overflow-hidden flex-shrink-0">
                   {category.image ? (
                     <img
-                      src={`${STORAGE_BASE_URL}/storage/${category.image}`}
+                      src={getImageUrl(category.image)}
                       alt={getCategoryName(category, 'en') || category.name}
                       className="w-full h-full object-cover"
                       loading="lazy"
+                      onError={(e) => {
+                        console.error('Failed to load category image in list view:', {
+                          categoryId: category.id,
+                          categoryName: getCategoryName(category, 'en'),
+                          imagePath: category.image,
+                          fullUrl: getImageUrl(category.image),
+                          storageBaseUrl: STORAGE_BASE_URL
+                        });
+                        e.target.style.display = 'none';
+                      }}
                     />
                   ) : (
                     <Image size={20} className="sm:w-6 sm:h-6 text-orange-400" />

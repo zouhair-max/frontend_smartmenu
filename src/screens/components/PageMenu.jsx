@@ -32,6 +32,23 @@ const getStorageBaseUrl = () => {
 
 const STORAGE_BASE_URL = getStorageBaseUrl();
 
+// Helper function to build image URL
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return null;
+  
+  let path = imagePath;
+  // Remove leading slash if present
+  if (path.startsWith('/')) {
+    path = path.substring(1);
+  }
+  // If path already includes 'storage/', don't add it again
+  if (path.startsWith('storage/')) {
+    return `${STORAGE_BASE_URL}/${path}`;
+  }
+  // Otherwise, add 'storage/' prefix
+  return `${STORAGE_BASE_URL}/storage/${path}`;
+};
+
 export default function PageMenu() {
   const { restaurant_id, table_id } = useParams();
   const { t, i18n } = useTranslation();
@@ -576,10 +593,15 @@ export default function PageMenu() {
                     <Crown className="w-4 h-4 text-orange-500 absolute -top-2 left-1/2 -translate-x-1/2 z-10" />
                     {menuData.restaurant?.logo ? (
                       <img
-                        src={`${STORAGE_BASE_URL}/storage/${menuData.restaurant.logo}`}
+                        src={getImageUrl(menuData.restaurant.logo)}
                         alt={menuData.restaurant?.name || 'Logo'}
                         className="w-16 h-16 object-contain"
                         onError={(e) => {
+                          console.error('Failed to load restaurant logo:', {
+                            logoPath: menuData.restaurant.logo,
+                            fullUrl: getImageUrl(menuData.restaurant.logo),
+                            storageBaseUrl: STORAGE_BASE_URL
+                          });
                           e.target.style.display = 'none';
                           const fallback = e.target.parentElement.querySelector('.logo-fallback');
                           if (fallback) fallback.style.display = 'flex';
@@ -682,10 +704,15 @@ export default function PageMenu() {
               <div className="mt-4">
                 <div className="relative h-48 sm:h-64 md:h-80 w-full overflow-hidden rounded-lg">
                   <img
-                    src={`${STORAGE_BASE_URL}/storage/${menuData.restaurant.cover_image}`}
+                    src={getImageUrl(menuData.restaurant.cover_image)}
                     alt={menuData.restaurant?.name || 'Restaurant banner'}
                     className="w-full h-full object-cover"
                     onError={(e) => {
+                      console.error('Failed to load restaurant cover image:', {
+                        coverPath: menuData.restaurant.cover_image,
+                        fullUrl: getImageUrl(menuData.restaurant.cover_image),
+                        storageBaseUrl: STORAGE_BASE_URL
+                      });
                       e.target.style.display = 'none';
                     }}
                   />
@@ -765,10 +792,19 @@ export default function PageMenu() {
                       }`}>
                         {showImage ? (
                           <img
-                            src={`${STORAGE_BASE_URL}/storage/${category.image}`}
+                            src={getImageUrl(category.image)}
                             alt={getCategoryName(category, currentLocale)}
                             className="w-full h-full object-cover"
-                            onError={handleImageError}
+                            onError={(e) => {
+                              console.error('Failed to load category image:', {
+                                categoryId: category.id,
+                                categoryName: getCategoryName(category, currentLocale),
+                                imagePath: category.image,
+                                fullUrl: getImageUrl(category.image),
+                                storageBaseUrl: STORAGE_BASE_URL
+                              });
+                              handleImageError();
+                            }}
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
@@ -824,10 +860,17 @@ export default function PageMenu() {
                     {/* Image */}
                     <div className="relative h-28 overflow-hidden">
                       <img
-                        src={`${STORAGE_BASE_URL}/storage/${meal.image}`}
+                        src={getImageUrl(meal.image)}
                         alt={getMealName(meal, currentLocale)}
                         className="w-full h-full object-cover"
                         onError={(e) => {
+                          console.error('Failed to load meal image:', {
+                            mealId: meal.id,
+                            mealName: getMealName(meal, currentLocale),
+                            imagePath: meal.image,
+                            fullUrl: getImageUrl(meal.image),
+                            storageBaseUrl: STORAGE_BASE_URL
+                          });
                           e.target.src = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400';
                         }}
                       />
@@ -972,9 +1015,18 @@ export default function PageMenu() {
                     <div className="flex gap-2">
                       <div className="w-14 h-14 rounded overflow-hidden flex-shrink-0">
                         <img
-                          src={`${STORAGE_BASE_URL}/storage/${item.image}`}
+                          src={getImageUrl(item.image)}
                           alt={getMealName(item, currentLocale)}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            console.error('Failed to load cart item image:', {
+                              itemId: item.id,
+                              itemName: getMealName(item, currentLocale),
+                              imagePath: item.image,
+                              fullUrl: getImageUrl(item.image),
+                              storageBaseUrl: STORAGE_BASE_URL
+                            });
+                          }}
                         />
                       </div>
                       <div className="flex-1 min-w-0">

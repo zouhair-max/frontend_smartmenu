@@ -3,6 +3,7 @@
     "version":  "0.1.0",
     "private":  true,
     "dependencies":  {
+                        "typescript": "4.9.5",
                          "@mui/icons-material":  "^7.3.5",
                          "@testing-library/dom":  "^10.4.1",
                          "@testing-library/jest-dom":  "^6.9.1",

@@ -412,17 +412,7 @@ const Restaurant_Tables = () => {
                 <Printer size={18} />
                 Print
               </button>
-              <button
-                onClick={() => {
-                  if (qrCodeUrl) {
-                    window.open(qrCodeUrl, '_blank');
-                  }
-                }}
-                disabled={!qrCodeUrl}
-                className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Download
-              </button>
+            
             </div>
           </div>
         </div>

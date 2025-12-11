@@ -12,6 +12,11 @@ import {
 import PageMenuService from '../../services/PageMenuService';
 import { getMealName, getMealDescription, getCategoryName } from '../../utils/translations';
 
+// Get base URL for storage files (without /api)
+const STORAGE_BASE_URL = process.env.REACT_APP_API_URL 
+  ? process.env.REACT_APP_API_URL 
+  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000');
+
 export default function PageMenu() {
   const { restaurant_id, table_id } = useParams();
   const { t, i18n } = useTranslation();
@@ -556,7 +561,7 @@ export default function PageMenu() {
                     <Crown className="w-4 h-4 text-orange-500 absolute -top-2 left-1/2 -translate-x-1/2 z-10" />
                     {menuData.restaurant?.logo ? (
                       <img
-                        src={`http://localhost:8000/storage/${menuData.restaurant.logo}`}
+                        src={`${STORAGE_BASE_URL}/storage/${menuData.restaurant.logo}`}
                         alt={menuData.restaurant?.name || 'Logo'}
                         className="w-16 h-16 object-contain"
                         onError={(e) => {
@@ -662,7 +667,7 @@ export default function PageMenu() {
               <div className="mt-4">
                 <div className="relative h-48 sm:h-64 md:h-80 w-full overflow-hidden rounded-lg">
                   <img
-                    src={`http://localhost:8000/storage/${menuData.restaurant.cover_image}`}
+                    src={`${STORAGE_BASE_URL}/storage/${menuData.restaurant.cover_image}`}
                     alt={menuData.restaurant?.name || 'Restaurant banner'}
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -745,7 +750,7 @@ export default function PageMenu() {
                       }`}>
                         {showImage ? (
                           <img
-                            src={`http://localhost:8000/storage/${category.image}`}
+                            src={`${STORAGE_BASE_URL}/storage/${category.image}`}
                             alt={getCategoryName(category, currentLocale)}
                             className="w-full h-full object-cover"
                             onError={handleImageError}
@@ -804,7 +809,7 @@ export default function PageMenu() {
                     {/* Image */}
                     <div className="relative h-28 overflow-hidden">
                       <img
-                        src={`http://localhost:8000/storage/${meal.image}`}
+                        src={`${STORAGE_BASE_URL}/storage/${meal.image}`}
                         alt={getMealName(meal, currentLocale)}
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -952,7 +957,7 @@ export default function PageMenu() {
                     <div className="flex gap-2">
                       <div className="w-14 h-14 rounded overflow-hidden flex-shrink-0">
                         <img
-                          src={`http://localhost:8000/storage/${item.image}`}
+                          src={`${STORAGE_BASE_URL}/storage/${item.image}`}
                           alt={getMealName(item, currentLocale)}
                           className="w-full h-full object-cover"
                         />

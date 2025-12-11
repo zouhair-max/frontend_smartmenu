@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import settingsService from '../../../services/settingsService';
 import LoadingSpinner from './components/LoadingSpinner';
 import { useAuth } from '../../../contexts/AuthContext';
+
+// Get base URL for storage files (without /api)
+const STORAGE_BASE_URL = process.env.REACT_APP_API_URL 
+  ? process.env.REACT_APP_API_URL 
+  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000');
 import {
   Settings,
   User,
@@ -90,7 +95,7 @@ const Setting = () => {
             avatar: response.user.avatar ?? null
           }));
           if (response.user.avatar) {
-            setAvatarUrl(`http://localhost:8000/storage/${response.user.avatar}`);
+            setAvatarUrl(`${STORAGE_BASE_URL}/storage/${response.user.avatar}`);
           } else {
             setAvatarUrl('');
           }
@@ -109,12 +114,12 @@ const Setting = () => {
             cover_image: response.restaurant.cover_image ?? null
           });
           if (response.restaurant.logo) {
-            setLogoUrl(`http://localhost:8000/storage/${response.restaurant.logo}`);
+            setLogoUrl(`${STORAGE_BASE_URL}/storage/${response.restaurant.logo}`);
           } else {
             setLogoUrl('');
           }
           if (response.restaurant.cover_image) {
-            setCoverUrl(`http://localhost:8000/storage/${response.restaurant.cover_image}`);
+            setCoverUrl(`${STORAGE_BASE_URL}/storage/${response.restaurant.cover_image}`);
           } else {
             setCoverUrl('');
           }

@@ -5,6 +5,11 @@ import mealsService from '../../../../services/mealsService';
 import categoriesService from '../../../../services/categoryApi';
 import CustomSelect from '../components/CustomSelect';
 
+// Get base URL for storage files (without /api)
+const STORAGE_BASE_URL = process.env.REACT_APP_API_URL 
+  ? process.env.REACT_APP_API_URL 
+  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000');
+
 // Enhanced Loading Spinner with Food Theme
 const LoadingSpinner = () => {
   return (
@@ -320,7 +325,7 @@ setImagePreview(meal.image);
                           <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">Image Preview:</p>
                           <div className="relative inline-block">
                             <img
-                              src={`http://127.0.0.1:8000/storage/${imagePreview}`}
+                              src={`${STORAGE_BASE_URL}/storage/${imagePreview}`}
                               alt="Preview"
                               className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 object-cover rounded-lg sm:rounded-xl shadow-md border-2 border-white"
                             />

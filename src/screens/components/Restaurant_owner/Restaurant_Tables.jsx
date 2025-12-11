@@ -4,6 +4,11 @@ import { tableService } from '../../../services/tableService';
 import { Plus, Edit, Trash2, QrCode, RefreshCw, X } from 'lucide-react';
 import LoadingSpinner from './components/LoadingSpinner';
 
+// Get base URL for storage files (without /api)
+const STORAGE_BASE_URL = process.env.REACT_APP_API_URL 
+  ? process.env.REACT_APP_API_URL 
+  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000');
+
 const Restaurant_Tables = () => {
   const navigate = useNavigate();
   const [tables, setTables] = useState([]);
@@ -85,18 +90,17 @@ const Restaurant_Tables = () => {
         console.log('Original QR code URL:', url);
         
         if (url) {
-          // If it's a full URL with localhost, replace with 127.0.0.1:8000
-          if (url.includes('localhost')) {
-            // Replace http://localhost with http://127.0.0.1:8000
-            url = url.replace(/http:\/\/localhost(\/|$)/g, 'http://127.0.0.1:8000/');
-            // Remove double slashes if any
-            url = url.replace(/([^:]\/)\/+/g, '$1');
-          }
           // If it's a relative path, prepend the storage URL
-          else if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          if (!url.startsWith('http://') && !url.startsWith('https://')) {
             // Remove leading slash if present
             const cleanPath = url.startsWith('/') ? url.substring(1) : url;
-            url = `http://127.0.0.1:8000/${cleanPath}`;
+            url = `${STORAGE_BASE_URL}/${cleanPath}`;
+          }
+          // If it's a full URL with localhost or 127.0.0.1, replace with STORAGE_BASE_URL
+          else if (url.includes('localhost') || url.includes('127.0.0.1')) {
+            // Extract the path from the URL
+            const urlObj = new URL(url);
+            url = `${STORAGE_BASE_URL}${urlObj.pathname}`;
           }
         }
         

@@ -3,6 +3,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Save, X, Upload, Menu, Globe, ListOrdered, Image, Utensils } from 'lucide-react';
 import CategoryApi from '../../../../services/categoryApi';
 
+// Get base URL for storage files (without /api)
+const STORAGE_BASE_URL = process.env.REACT_APP_API_URL 
+  ? process.env.REACT_APP_API_URL 
+  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000');
+
 // Enhanced Loading Spinner with Category Theme
 const LoadingSpinner = () => {
   return (
@@ -253,7 +258,7 @@ const CategoryForm = () => {
                             <img
                               src={imagePreview.startsWith('http') || imagePreview.startsWith('blob:') 
                                 ? imagePreview 
-                                : `http://127.0.0.1:8000/storage/${imagePreview}`}
+                                : `${STORAGE_BASE_URL}/storage/${imagePreview}`}
                               alt="Preview"
                               className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 object-cover rounded-lg sm:rounded-xl shadow-md border-2 border-white"
                             />

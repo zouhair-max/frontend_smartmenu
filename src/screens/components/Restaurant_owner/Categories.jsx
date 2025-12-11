@@ -4,6 +4,11 @@ import { Plus, Edit, Trash2, Image, X, Search, Grid, List, ChefHat, Utensils, Me
 import CategoryApi from '../../../services/categoryApi';
 import { getCategoryName } from '../../../utils/translations';
 
+// Get base URL for storage files (without /api)
+const STORAGE_BASE_URL = process.env.REACT_APP_API_URL 
+  ? process.env.REACT_APP_API_URL 
+  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000');
+
 export default function Categories() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
@@ -249,7 +254,7 @@ export default function Categories() {
                 <div className="relative h-36 sm:h-48 bg-gradient-to-br from-orange-50 to-amber-50 overflow-hidden">
                   {category.image ? (
                     <img
-                      src={`http://127.0.0.1:8000/storage/${category.image}`}
+                      src={`${STORAGE_BASE_URL}/storage/${category.image}`}
                       alt={getCategoryName(category, 'en') || category.name}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
@@ -302,7 +307,7 @@ export default function Categories() {
                 <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center overflow-hidden flex-shrink-0">
                   {category.image ? (
                     <img
-                      src={`http://127.0.0.1:8000/storage/${category.image}`}
+                      src={`${STORAGE_BASE_URL}/storage/${category.image}`}
                       alt={getCategoryName(category, 'en') || category.name}
                       className="w-full h-full object-cover"
                       loading="lazy"

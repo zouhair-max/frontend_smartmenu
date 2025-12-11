@@ -17,6 +17,11 @@ import {
 } from 'lucide-react';
 import mealsService from '../../../../services/mealsService';
 import categoriesService from '../../../../services/categoryApi';
+
+// Get base URL for storage files (without /api)
+const STORAGE_BASE_URL = process.env.REACT_APP_API_URL 
+  ? process.env.REACT_APP_API_URL 
+  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000');
 import LoadingSpinner from '../components/LoadingSpinner';
 import CustomSelect from '../components/CustomSelect'; 
 
@@ -255,7 +260,7 @@ const MealsList = () => {
 const MealCard = ({ meal, onToggleAvailability, onDelete }) => {
   const mealName = meal.translations?.find(t => t.locale === 'en')?.name || meal.translations?.[0]?.name || meal.name;
   const categoryName = meal.category?.name || meal.category?.translations?.[0]?.name || 'Uncategorized';
-  const imageUrl = meal.image ? `http://127.0.0.1:8000/storage/${meal.image}` : '/images/placeholder-food.jpg';
+  const imageUrl = meal.image ? `${STORAGE_BASE_URL}/storage/${meal.image}` : '/images/placeholder-food.jpg';
   
   return (
     <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
@@ -334,7 +339,7 @@ const MealRow = ({ meal, onToggleAvailability, onDelete }) => {
   const mealName = meal.translations?.find(t => t.locale === 'en')?.name || meal.translations?.[0]?.name || meal.name;
   const mealDescription = meal.translations?.find(t => t.locale === 'en')?.description || meal.translations?.[0]?.description || '';
   const categoryName = meal.category?.name || meal.category?.translations?.[0]?.name || 'Uncategorized';
-  const imageUrl = meal.image ? `http://127.0.0.1:8000/storage/${meal.image}` : '/images/placeholder-food.jpg';
+  const imageUrl = meal.image ? `${STORAGE_BASE_URL}/storage/${meal.image}` : '/images/placeholder-food.jpg';
   
   return (
     <tr className="hover:bg-gray-50 transition-colors duration-200">

@@ -17,13 +17,13 @@ import {
 } from 'lucide-react';
 import mealsService from '../../../../services/mealsService';
 import categoriesService from '../../../../services/categoryApi';
+import LoadingSpinner from '../components/LoadingSpinner';
+import CustomSelect from '../components/CustomSelect';
 
 // Get base URL for storage files (without /api)
 const STORAGE_BASE_URL = process.env.REACT_APP_API_URL 
   ? process.env.REACT_APP_API_URL 
-  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000');
-import LoadingSpinner from '../components/LoadingSpinner';
-import CustomSelect from '../components/CustomSelect'; 
+  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000'); 
 
 
 const MealsList = () => {

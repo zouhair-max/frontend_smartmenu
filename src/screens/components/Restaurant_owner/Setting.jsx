@@ -2,11 +2,6 @@ import React, { useState, useEffect } from 'react';
 import settingsService from '../../../services/settingsService';
 import LoadingSpinner from './components/LoadingSpinner';
 import { useAuth } from '../../../contexts/AuthContext';
-
-// Get base URL for storage files (without /api)
-const STORAGE_BASE_URL = process.env.REACT_APP_API_URL 
-  ? process.env.REACT_APP_API_URL 
-  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000');
 import {
   Settings,
   User,
@@ -27,6 +22,11 @@ import {
   EyeOff,
   Menu
 } from 'lucide-react';
+
+// Get base URL for storage files (without /api)
+const STORAGE_BASE_URL = process.env.REACT_APP_API_URL 
+  ? process.env.REACT_APP_API_URL 
+  : (process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000');
 
 const Setting = () => {
   const { updateUser } = useAuth();

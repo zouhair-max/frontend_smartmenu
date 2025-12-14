@@ -158,7 +158,7 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <a
-                  href="/auth/signup"
+                  href="/signup"
                   className="inline-flex items-center justify-center bg-orange-500 text-white px-8 py-4 rounded-lg font-medium text-lg hover:bg-orange-600 transition-all shadow-lg hover:shadow-xl"
                 >
                   Start Free Trial
@@ -345,14 +345,14 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="/auth/signup"
+              href="/signup"
               className="inline-flex items-center justify-center bg-white text-orange-500 px-8 py-4 rounded-lg font-medium text-lg hover:bg-gray-50 transition-all shadow-lg"
             >
               Start Free Trial
               <ChevronRight className="w-5 h-5 ml-2" />
             </a>
             <a
-              href="/auth/login"
+              href="/login"
               className="inline-flex items-center justify-center bg-transparent text-white border-2 border-white px-8 py-4 rounded-lg font-medium text-lg hover:bg-white hover:text-orange-500 transition-all"
             >
               Sign In
@@ -403,7 +403,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-            <p>© 2024 Digital Menu. All rights reserved.</p>
+            <p>© 2025 Digital Menu. All rights reserved.</p>
           </div>
         </div>
       </footer>

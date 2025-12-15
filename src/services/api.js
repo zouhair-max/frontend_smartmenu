@@ -62,20 +62,53 @@ class ApiService {
         throw new Error('Authentication required');
       }
 
+      // Get content type to check if response is JSON
+      const contentType = response.headers.get('content-type');
+      const isJson = contentType && contentType.includes('application/json');
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const error = new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        let errorData = {};
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        
+        if (isJson) {
+          try {
+            errorData = await response.json();
+            errorMessage = errorData.message || errorMessage;
+          } catch (e) {
+            console.error('Failed to parse error JSON:', e);
+          }
+        } else {
+          // If response is HTML, try to get text for debugging
+          const text = await response.text().catch(() => '');
+          console.error('Server returned HTML instead of JSON:', text.substring(0, 200));
+          errorMessage = `Server error (${response.status}). The server returned an HTML page instead of JSON. Please check the API endpoint: ${url}`;
+        }
+        
+        const error = new Error(errorMessage);
         // Preserve the full error structure
         error.errors = errorData.errors || {};
         error.success = errorData.success;
+        error.status = response.status;
         throw error;
       }
 
-      const data = await response.json();
-      return data;
+      // Parse response as JSON only if content type indicates JSON
+      if (isJson) {
+        const data = await response.json();
+        return data;
+      } else {
+        // If not JSON, return text (shouldn't happen for API calls, but handle gracefully)
+        const text = await response.text();
+        console.warn('API returned non-JSON response:', text.substring(0, 200));
+        throw new Error('Server returned an unexpected response format. Expected JSON.');
+      }
 
     } catch (error) {
-      console.error('API request failed:', error);
+      console.error('API request failed:', {
+        url,
+        error: error.message,
+        status: error.status
+      });
       throw error;
     }
   }

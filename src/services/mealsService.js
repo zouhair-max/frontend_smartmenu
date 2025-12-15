@@ -20,20 +20,14 @@ class MealsService {
 
   // Create a new meal
   createMeal(mealData) {
-    return api.post('/owner/meals', mealData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
+    // api.post automatically handles FormData - no need to set Content-Type manually
+    return api.post('/owner/meals', mealData);
   }
 
   // Update an existing meal
   updateMeal(id, mealData) {
-    return api.post(`/owner/meals/${id}`, mealData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
+    // api.post automatically handles FormData - no need to set Content-Type manually
+    return api.post(`/owner/meals/${id}`, mealData);
   }
 
   // Delete a meal

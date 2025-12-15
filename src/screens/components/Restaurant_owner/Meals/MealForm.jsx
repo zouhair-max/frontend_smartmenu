@@ -198,7 +198,23 @@ const MealForm = () => {
       navigate('/meals');
     } catch (error) {
       console.error('Error saving meal:', error);
-      const errorMessage = error.message || error.errors?.message || 'Error saving meal. Please try again.';
+      
+      // Handle validation errors from API
+      let errorMessage = 'Error saving meal. Please try again.';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.errors) {
+        // If there are validation errors, format them nicely
+        const errorMessages = Object.values(error.errors)
+          .flat()
+          .filter(msg => msg)
+          .join('\n');
+        if (errorMessages) {
+          errorMessage = errorMessages;
+        }
+      }
+      
       alert(errorMessage);
     } finally {
       setLoading(false);

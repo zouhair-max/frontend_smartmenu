@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, EyeOff, Utensils, Lock, Mail, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Utensils, Lock, Mail, AlertCircle, Info } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -112,6 +112,14 @@ export default function Login() {
     if (e.key === 'Enter') {
       handleSubmit();
     }
+  };
+
+  const fillCredentials = (email, password) => {
+    setFormData({
+      email,
+      password
+    });
+    setErrors({});
   };
 
   // Show loading while redirecting if authenticated
@@ -262,6 +270,57 @@ export default function Login() {
               )}
             </button>
           </form>
+
+          {/* Test Credentials */}
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start mb-3">
+              <Info className="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
+              <h3 className="text-sm font-semibold text-blue-900">Test Credentials</h3>
+            </div>
+            <div className="space-y-3 text-xs">
+              {/* Restaurant Owner */}
+              <div className="bg-white p-3 rounded border border-blue-100">
+                <p className="font-medium text-blue-900 mb-2">Restaurant Owner:</p>
+                <button
+                  type="button"
+                  onClick={() => fillCredentials('zouhairboudeir0@gmail.com', 'zouhairboudeir0@Agmail.com')}
+                  className="text-left w-full hover:bg-blue-50 p-2 rounded transition-colors"
+                  disabled={isLoading}
+                >
+                  <p className="text-gray-700"><span className="font-medium">Email:</span> zouhairboudeir0@gmail.com</p>
+                  <p className="text-gray-700"><span className="font-medium">Password:</span> zouhairboudeir0@Agmail.com</p>
+                </button>
+              </div>
+
+              {/* Staff */}
+              <div className="bg-white p-3 rounded border border-blue-100">
+                <p className="font-medium text-blue-900 mb-2">Staff:</p>
+                <button
+                  type="button"
+                  onClick={() => fillCredentials('staf@gmail.com', 'staf@gmail.com')}
+                  className="text-left w-full hover:bg-blue-50 p-2 rounded transition-colors"
+                  disabled={isLoading}
+                >
+                  <p className="text-gray-700"><span className="font-medium">Email:</span> staf@gmail.com</p>
+                  <p className="text-gray-700"><span className="font-medium">Password:</span> staf@gmail.com</p>
+                </button>
+              </div>
+
+              {/* Super Admin */}
+              <div className="bg-white p-3 rounded border border-blue-100">
+                <p className="font-medium text-blue-900 mb-2">Super Admin:</p>
+                <button
+                  type="button"
+                  onClick={() => fillCredentials('SuperAdmin@gmail.com', 'SuperAdmin@gmail.com')}
+                  className="text-left w-full hover:bg-blue-50 p-2 rounded transition-colors"
+                  disabled={isLoading}
+                >
+                  <p className="text-gray-700"><span className="font-medium">Email:</span> SuperAdmin@gmail.com</p>
+                  <p className="text-gray-700"><span className="font-medium">Password:</span> SuperAdmin@gmail.com</p>
+                </button>
+              </div>
+            </div>
+          </div>
 
           {/* Sign Up Link */}
           <div className="mt-6 text-center">

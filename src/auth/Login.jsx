@@ -283,12 +283,12 @@ export default function Login() {
                 <p className="font-medium text-blue-900 mb-2">Restaurant Owner:</p>
                 <button
                   type="button"
-                  onClick={() => fillCredentials('zouhairboudeir0@gmail.com', 'zouhairboudeir0@Agmail.com')}
+                  onClick={() => fillCredentials('zouhairboudeir0@gmail.com', 'zouhairboudeir0A@gmail.com')}
                   className="text-left w-full hover:bg-blue-50 p-2 rounded transition-colors"
                   disabled={isLoading}
                 >
                   <p className="text-gray-700"><span className="font-medium">Email:</span> zouhairboudeir0@gmail.com</p>
-                  <p className="text-gray-700"><span className="font-medium">Password:</span> zouhairboudeir0@Agmail.com</p>
+                  <p className="text-gray-700"><span className="font-medium">Password:</span> zouhairboudeir0A@gmail.com</p>
                 </button>
               </div>
 
